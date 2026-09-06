@@ -44,3 +44,14 @@ requirements.txt        Python dependencies
 ```
 
 Use only against infrastructure you own or are explicitly authorized to test. Do not use this suite to evade access controls, create abusive traffic, or target third-party systems. Start with low visit counts and coordinate load levels with the service owner.
+
+## Verification
+
+The repository includes `tests_smoke.py`, which starts a temporary localhost HTTP server and runs two real headless Camoufox visits against it. It verifies navigation, bounded behavior execution, progress completion, and browser/context cleanup without contacting an external target.
+
+```bash
+camoufox fetch
+python3 tests_smoke.py
+```
+
+The suite has been verified with Camoufox `0.5.6` and browser build `152.0.4-beta.30` in the development environment. Dependency installation and browser availability are prerequisites for runtime execution; syntax and validation checks do not require a live browser.

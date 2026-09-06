@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
+import tempfile
 import threading
 from pathlib import Path
 import tkinter as tk
@@ -29,8 +31,12 @@ class App(ctk.CTk):
         self._loop: asyncio.AbstractEventLoop | None = None
         self._engine: PerformanceEngine | None = None
         self._vars: dict[str, tk.StringVar] = {}
+        self._loading_config = True
+        self._closing = False
         self._build_ui()
         self._load_config()
+        self._loading_config = False
+        self._save_config_safely()
         self.protocol("WM_DELETE_WINDOW", self._on_close)
 
     def _build_ui(self) -> None:
@@ -46,8 +52,7 @@ class App(ctk.CTk):
             var = tk.StringVar()
             var.trace_add("write", lambda *_: self._save_config_safely())
             self._vars[key] = var
-            entry = ctk.CTkEntry(form, textvariable=var, show="•" if "password" in key else "")
-            entry.grid(row=row, column=1, padx=16, pady=8, sticky="ew")
+            ctk.CTkEntry(form, textvariable=var, show="•" if "password" in key else "").grid(row=row, column=1, padx=16, pady=8, sticky="ew")
         behavior = ctk.CTkFrame(self)
         behavior.grid(row=3, column=0, columnspan=2, padx=24, pady=16, sticky="ew")
         behavior.grid_columnconfigure(1, weight=1)
@@ -73,7 +78,7 @@ class App(ctk.CTk):
     def _load_config(self) -> None:
         try:
             data = json.loads(CONFIG_PATH.read_text(encoding="utf-8"))
-        except (FileNotFoundError, json.JSONDecodeError):
+        except (FileNotFoundError, json.JSONDecodeError, OSError):
             data = {}
         for key, var in self._vars.items():
             if key in data and not isinstance(data[key], dict):
@@ -83,26 +88,63 @@ class App(ctk.CTk):
             if key in behavior:
                 self._vars[key].set(str(behavior[key]))
 
-    def _config_dict(self) -> dict:
-        return {"target_url": self._vars["target_url"].get(), "visits": self._number("visits", int), "min_duration": self._number("min_duration", float), "max_duration": self._number("max_duration", float), "proxy_server": self._vars["proxy_server"].get(), "proxy_username": self._vars["proxy_username"].get(), "proxy_password": self._vars["proxy_password"].get(), "behavior": {"min_pause_ms": self._number("min_pause_ms", int), "max_pause_ms": self._number("max_pause_ms", int), "max_scrolls": self._number("max_scrolls", int)}}
-
     def _number(self, key: str, cast):
         try:
-            return cast(self._vars[key].get())
-        except ValueError:
+            return cast(self._vars[key].get().strip())
+        except (ValueError, AttributeError):
             return 0
 
+    def _config_dict(self) -> dict:
+        return {
+            "target_url": self._vars["target_url"].get(),
+            "visits": self._number("visits", int),
+            "min_duration": self._number("min_duration", float),
+            "max_duration": self._number("max_duration", float),
+            "proxy_server": self._vars["proxy_server"].get(),
+            "proxy_username": self._vars["proxy_username"].get(),
+            "proxy_password": self._vars["proxy_password"].get(),
+            "behavior": {
+                "min_pause_ms": self._number("min_pause_ms", int),
+                "max_pause_ms": self._number("max_pause_ms", int),
+                "max_scrolls": self._number("max_scrolls", int),
+            },
+        }
+
     def _save_config_safely(self) -> None:
+        if self._loading_config:
+            return
         try:
-            CONFIG_PATH.write_text(json.dumps(self._config_dict(), indent=2) + "\n", encoding="utf-8")
+            payload = json.dumps(self._config_dict(), indent=2) + "\n"
+            fd, temp_name = tempfile.mkstemp(prefix="config.", suffix=".tmp", dir=ROOT)
+            with os.fdopen(fd, "w", encoding="utf-8") as handle:
+                handle.write(payload)
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(temp_name, CONFIG_PATH)
         except (OSError, ValueError):
-            pass
+            try:
+                Path(temp_name).unlink(missing_ok=True)
+            except (OSError, UnboundLocalError):
+                pass
 
     def _start(self) -> None:
         if self._worker and self._worker.is_alive():
             return
         try:
-            config = RunConfig(target_url=self._vars["target_url"].get().strip(), visits=self._number("visits", int), min_duration=self._number("min_duration", float), max_duration=self._number("max_duration", float), proxy_server=self._vars["proxy_server"].get(), proxy_username=self._vars["proxy_username"].get(), proxy_password=self._vars["proxy_password"].get(), behavior=BehaviorConfig(min_pause_ms=self._number("min_pause_ms", int), max_pause_ms=self._number("max_pause_ms", int), max_scrolls=self._number("max_scrolls", int)))
+            config = RunConfig(
+                target_url=self._vars["target_url"].get(),
+                visits=self._number("visits", int),
+                min_duration=self._number("min_duration", float),
+                max_duration=self._number("max_duration", float),
+                proxy_server=self._vars["proxy_server"].get(),
+                proxy_username=self._vars["proxy_username"].get(),
+                proxy_password=self._vars["proxy_password"].get(),
+                behavior=BehaviorConfig(
+                    min_pause_ms=self._number("min_pause_ms", int),
+                    max_pause_ms=self._number("max_pause_ms", int),
+                    max_scrolls=self._number("max_scrolls", int),
+                ),
+            )
             config.validate()
         except ValueError as exc:
             messagebox.showerror("Invalid configuration", str(exc))
@@ -116,18 +158,25 @@ class App(ctk.CTk):
     def _run_worker(self, config: RunConfig) -> None:
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
+
         async def progress(done: int, total: int, text: str) -> None:
-            self.after(0, self._update_progress, done, total, text)
+            if not self._closing:
+                self.after(0, self._update_progress, done, total, text)
+
         self._engine = PerformanceEngine(config, progress)
         try:
             self._loop.run_until_complete(self._engine.run())
+        except asyncio.CancelledError:
+            pass
         except Exception as exc:
-            self.after(0, self._run_error, str(exc))
+            if not self._closing:
+                self.after(0, self._run_error, str(exc))
         finally:
             self._loop.close()
             self._loop = None
             self._engine = None
-            self.after(0, self._run_finished)
+            if not self._closing:
+                self.after(0, self._run_finished)
 
     def _update_progress(self, done: int, total: int, text: str) -> None:
         self.progress.set(done / total if total else 0)
@@ -148,7 +197,11 @@ class App(ctk.CTk):
             self.stop_button.configure(state="disabled")
 
     def _on_close(self) -> None:
-        self._stop()
+        if self._closing:
+            return
+        self._closing = True
+        if self._engine and self._loop and self._loop.is_running():
+            self._loop.call_soon_threadsafe(self._engine.request_stop)
         self.destroy()
 
 
