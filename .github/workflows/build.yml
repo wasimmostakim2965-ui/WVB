@@ -38,14 +38,22 @@ jobs:
       - name: Fetch Camoufox browser
         run: camoufox fetch
 
+      - name: Install Linux runtime libraries
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libstdc++6 libgtk-3-0 libdbus-glib-1-2
+
+      - name: Install macOS runtime tools
+        if: runner.os == 'macOS'
+        run: brew update && brew install python-tk
+
       - name: Compile application
-        run: pyinstaller --clean --noconfirm --onefile --name WVB-${{ matrix.os }} main.py
+        run: pyinstaller --clean --noconfirm --onefile --collect-all camoufox --name WVB-${{ matrix.os }} main.py
 
       - name: Assemble distributable bundle
         shell: bash
         run: |
           mkdir -p release/camoufox-cache
-          cp -r "$HOME/.cache/camoufox/browsers" release/camoufox-cache/
+          python tools/package_browser.py release/camoufox-cache
           cp config.json release/
           if [ "${{ runner.os }}" = "Windows" ]; then
             cp dist/WVB-${{ matrix.os }}.exe release/
@@ -53,6 +61,17 @@ jobs:
             cp dist/WVB-${{ matrix.os }} release/
           fi
           printf '%s\n' 'WVB Desktop Performance Suite' 'The bundle includes the compiled executable and Camoufox browser cache.' > release/README.txt
+
+      - name: Bundle Microsoft C++ runtime DLLs
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $runtime = "release\windows-runtime"
+          New-Item -ItemType Directory -Force -Path $runtime | Out-Null
+          foreach ($name in @('vcruntime140.dll', 'vcruntime140_1.dll', 'msvcp140.dll')) {
+            $source = "C:\Windows\System32\$name"
+            if (Test-Path $source) { Copy-Item $source $runtime -Force }
+          }
 
       - name: Upload compiled artifact
         uses: actions/upload-artifact@v4

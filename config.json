@@ -4,5 +4,6 @@
   "min_duration": "8",
   "max_duration": "15",
   "scrolling_enabled": true,
+  "speed": "Auto",
   "max_parallel": 2
 }

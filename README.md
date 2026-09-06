@@ -65,3 +65,15 @@ The **Random scrolling** switch controls the scrolling phase independently from 
 ## GitHub Actions build
 
 `.github/workflows/build.yml` runs on pushes to `main` and manual dispatch. It builds Windows, Linux, and macOS artifacts, installs the Python requirements and PyInstaller, fetches the Camoufox browser, compiles the application, bundles the executable with the fetched Camoufox browser cache and `config.json`, and uploads each platform bundle as a downloadable GitHub Actions artifact.
+
+## Resource management and speed control
+
+The application uses `psutil` to sample host CPU and RAM before each visit. When either metric reaches 80%, new visits pause and the dashboard reports the throttled state. Normal pacing resumes only after both metrics fall below 60%, providing hysteresis instead of rapid start/stop oscillation. Active browser contexts are not force-killed; throttling applies at safe visit boundaries.
+
+The Speed selector supports **Auto**, fixed levels **1–10**, and **Max**. Fixed levels control the inter-visit pacing delay; Max removes the voluntary delay. Resource safety remains authoritative, so even Max pauses when host load reaches the high threshold.
+
+The minimum/maximum stay timer is selected and started only after `page.goto(..., wait_until="domcontentloaded")` completes. Browser navigation time is therefore excluded from the configured stay duration.
+
+## Packaging compatibility note
+
+The GitHub workflow bundles the complete Camoufox cache beside each PyInstaller executable and the packaged application bootstraps that cache on first launch. Windows runtime DLLs are copied when available on the build runner. Current Camoufox/Firefox builds and Python 3.12 do not provide a reliable Windows 7 compatibility guarantee; Windows 10/11 are the supported Windows targets. A true Windows 7 build requires a separately pinned legacy Python/Camoufox toolchain and must be validated on an actual Windows 7 runner.

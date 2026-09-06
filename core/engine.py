@@ -12,6 +12,7 @@ from urllib.parse import urlparse
 from camoufox.async_api import AsyncCamoufox
 
 from .behavior import BehaviorConfig, exercise_page
+from .resources import ResourceMonitor
 
 LOGGER = logging.getLogger(__name__)
 ProgressCallback = Callable[[str, int, int, str], Awaitable[None]]
@@ -24,6 +25,7 @@ class RunConfig:
     min_duration: float
     max_duration: float
     scrolling_enabled: bool = True
+    speed: str = "auto"
     proxy_server: str = ""
     proxy_username: str = ""
     proxy_password: str = ""
@@ -41,6 +43,13 @@ class RunConfig:
         if self.navigation_timeout_ms < 1_000:
             raise ValueError("Navigation timeout must be at least 1000 ms")
         self.behavior.validate()
+        normalized_speed = str(self.speed).lower()
+        if normalized_speed not in {"auto", "max"}:
+            try:
+                if not 1 <= int(normalized_speed) <= 10:
+                    raise ValueError
+            except ValueError as exc:
+                raise ValueError("Speed must be Auto, Max, or an integer from 1 to 10") from exc
 
     def proxy(self) -> dict[str, str] | None:
         server = self.proxy_server.strip()
@@ -65,6 +74,9 @@ class PerformanceEngine:
         self.config = config
         self.progress = progress
         self._stop_requested = asyncio.Event()
+        self._resources = ResourceMonitor(
+            status=lambda text: self.progress(self.session_id, 0, self.config.visits, text)
+        )
 
     def request_stop(self) -> None:
         self._stop_requested.set()
@@ -86,6 +98,14 @@ class PerformanceEngine:
                 if self._stop_requested.is_set():
                     await self.progress(self.session_id, visit - 1, self.config.visits, "Stopped")
                     return
+                snapshot = await self._resources.wait_until_ready()
+                await self.progress(
+                    self.session_id,
+                    visit - 1,
+                    self.config.visits,
+                    f"Ready · CPU {snapshot.cpu_percent:.0f}% · RAM {snapshot.memory_percent:.0f}%",
+                )
+                await self._resources.pace(self.config.speed)
                 duration = random.uniform(self.config.min_duration, self.config.max_duration)
                 context = None
                 try:
