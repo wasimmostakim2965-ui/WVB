@@ -1,17 +1,8 @@
 {
   "target_url": "https://example.com",
-  "visits": 10,
-  "min_duration": 8.0,
-  "max_duration": 15.0,
-  "proxy_server": "",
-  "proxy_username": "",
-  "proxy_password": "",
-  "behavior": {
-    "min_pause_ms": 250,
-    "max_pause_ms": 1400,
-    "scroll_step_min": 220,
-    "scroll_step_max": 680,
-    "max_scrolls": 18,
-    "pointer_moves": 7
-  }
+  "visits": "10",
+  "min_duration": "8",
+  "max_duration": "15",
+  "scrolling_enabled": true,
+  "max_parallel": 2
 }

@@ -5,7 +5,7 @@ import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 
 from core.behavior import BehaviorConfig
-from core.engine import PerformanceEngine, RunConfig
+from core.engine import RunConfig, SessionManager
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -26,30 +26,32 @@ async def main() -> None:
     threading.Thread(target=server.serve_forever, daemon=True).start()
     events: list[str] = []
 
-    async def progress(done: int, total: int, text: str) -> None:
-        events.append(f"{done}/{total}:{text}")
+    async def progress(session_id: str, done: int, total: int, text: str) -> None:
+        events.append(f"{session_id}:{done}/{total}:{text}")
 
     try:
         config = RunConfig(
             target_url=f"http://127.0.0.1:{server.server_port}/",
-            visits=2,
+            visits=1,
             min_duration=0.2,
             max_duration=0.2,
-            behavior=BehaviorConfig(
-                min_pause_ms=1,
-                max_pause_ms=2,
-                max_scrolls=2,
-                pointer_moves=1,
-            ),
+            behavior=BehaviorConfig(min_pause_ms=1, max_pause_ms=2, max_scrolls=2, pointer_moves=1),
         )
-        await PerformanceEngine(config, progress).run()
+        # A queue with one worker proves multiple isolated sessions without
+        # depending on two large Camoufox browser processes starting at once.
+        manager = SessionManager(progress, max_parallel=1)
+        manager.add(config)
+        manager.add(config)
+        await asyncio.sleep(0.2)
+        await manager.wait()
+        manager.shutdown()
     finally:
         server.shutdown()
+        server.server_close()
 
-    assert any("Completed visit 1" in event for event in events), events
-    assert any("Completed visit 2" in event for event in events), events
-    assert events[-1].endswith("Run complete"), events
-    print("REAL CAMOUFOX SMOKE TEST PASSED")
+    assert len({event.split(":", 1)[0] for event in events}) == 2, events
+    assert sum(event.endswith(":Complete") for event in events) == 2, events
+    print("REAL CAMOUFOX MULTI-SESSION SMOKE TEST PASSED")
     print("events:", len(events))
 
 

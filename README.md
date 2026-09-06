@@ -55,3 +55,13 @@ python3 tests_smoke.py
 ```
 
 The suite has been verified with Camoufox `0.5.6` and browser build `152.0.4-beta.30` in the development environment. Dependency installation and browser availability are prerequisites for runtime execution; syntax and validation checks do not require a live browser.
+
+## Multi-session dashboard
+
+The desktop UI uses a clean light theme with two panels. The left panel builds and saves a session configuration; the right panel displays queued, active, completed, and stopped sessions with individual progress bars and STOP controls. Sessions are submitted to a bounded asynchronous queue, with configurable parallelism. Each session still creates and closes a fresh browser context for every visit.
+
+The **Random scrolling** switch controls the scrolling phase independently from pointer movement and reading pauses. **STOP ALL** requests cooperative cancellation without blocking the Tkinter event loop.
+
+## GitHub Actions build
+
+`.github/workflows/build.yml` runs on pushes to `main` and manual dispatch. It builds Windows, Linux, and macOS artifacts, installs the Python requirements and PyInstaller, fetches the Camoufox browser, compiles the application, bundles the executable with the fetched Camoufox browser cache and `config.json`, and uploads each platform bundle as a downloadable GitHub Actions artifact.
