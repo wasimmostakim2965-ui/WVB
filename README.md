@@ -77,3 +77,7 @@ The minimum/maximum stay timer is selected and started only after `page.goto(...
 ## Packaging compatibility note
 
 The GitHub workflow bundles the complete Camoufox cache beside each PyInstaller executable and the packaged application bootstraps that cache on first launch. Windows runtime DLLs are copied when available on the build runner. Current Camoufox/Firefox builds and Python 3.12 do not provide a reliable Windows 7 compatibility guarantee; Windows 10/11 are the supported Windows targets. A true Windows 7 build requires a separately pinned legacy Python/Camoufox toolchain and must be validated on an actual Windows 7 runner.
+
+## Build artifact verification
+
+The workflow now explicitly collects both Camoufox and Playwright package resources and runs `tools/verify_bundle.py` before upload. The verifier fails the job unless the platform executable, Camoufox launcher, `properties.json`, and browser `omni.ja` assets are present. The successful run produced three non-expired artifacts: Windows (~582 MB), Ubuntu (~787 MB), and macOS (~392 MB). The GitHub API confirmed all three uploads; a local artifact download attempt returned an `unexpected EOF` from the transfer tool, not a build or upload error.
