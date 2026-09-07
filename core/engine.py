@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import asyncio
-import gc
 import logging
 import random
 import time
@@ -144,6 +143,8 @@ class VisitMetrics:
     timeout: int = 0
     cancelled: int = 0
     latency_total: float = 0.0
+    navigation_total: float = 0.0
+    dwell_total: float = 0.0
 
     @property
     def latency_avg(self) -> float:
@@ -183,12 +184,19 @@ class PerformanceEngine:
                     self.metrics.cancelled += self.config.visits - visit + 1
                     await self.progress(self.session_id, visit - 1, self.config.visits, self._summary("Stopped"))
                     return
-                snapshot = await self._resources.wait_until_ready()
+                snapshot = await self._resources.wait_until_ready(self._stop_requested)
+                if snapshot is None:
+                    self.metrics.cancelled += self.config.visits - visit + 1
+                    await self.progress(self.session_id, visit - 1, self.config.visits, self._summary("Stopped"))
+                    return
                 if not await self._rate_limiter.wait(self._stop_requested):
                     self.metrics.cancelled += self.config.visits - visit + 1
                     await self.progress(self.session_id, visit - 1, self.config.visits, self._summary("Stopped"))
                     return
-                await self._resources.pace(self.config.speed)
+                if not await self._resources.pace(self.config.speed, self._stop_requested):
+                    self.metrics.cancelled += self.config.visits - visit + 1
+                    await self.progress(self.session_id, visit - 1, self.config.visits, self._summary("Stopped"))
+                    return
                 duration = random.uniform(self.config.min_duration, self.config.max_duration)
                 context = None
                 started = time.monotonic()
@@ -204,10 +212,19 @@ class PerformanceEngine:
                     context = await browser.new_context(**context_options)
                     page = await context.new_page()
                     page.set_default_navigation_timeout(self.config.navigation_timeout_ms)
+                    navigation_started = time.monotonic()
                     await self._navigate(page)
+                    self.metrics.navigation_total += time.monotonic() - navigation_started
                     await self.progress(self.session_id, visit - 1, self.config.visits, f"Ready ({self.config.readiness_policy}) · Active {duration:.1f}s")
-                    await exercise_page(page, duration, behavior)
-                    outcome = "success"
+                    dwell_started = time.monotonic()
+                    if await exercise_page(page, duration, behavior, self._stop_requested):
+                        self.metrics.dwell_total += time.monotonic() - dwell_started
+                        outcome = "success"
+                    else:
+                        self.metrics.dwell_total += time.monotonic() - dwell_started
+                        self.metrics.cancelled += 1
+                        await self.progress(self.session_id, visit - 1, self.config.visits, self._summary("Stopped"))
+                        return
                 except asyncio.CancelledError:
                     self.metrics.cancelled += 1
                     raise
@@ -228,22 +245,24 @@ class PerformanceEngine:
                             await context.close()
                         except Exception:
                             LOGGER.exception("Session %s context cleanup failed", self.session_id)
-                    gc.collect()
                 await self.progress(self.session_id, visit, self.config.visits, f"Visit {visit} {outcome}")
         await self.progress(self.session_id, self.config.visits, self.config.visits, self._summary("Complete"))
 
     def _summary(self, state: str) -> str:
-        return f"{state} · success={self.metrics.success} failure={self.metrics.failure} timeout={self.metrics.timeout} avg={self.metrics.latency_avg:.2f}s"
+        return f"{state} · success={self.metrics.success} failure={self.metrics.failure} timeout={self.metrics.timeout} nav={self.metrics.navigation_total:.2f}s dwell={self.metrics.dwell_total:.2f}s avg={self.metrics.latency_avg:.2f}s"
 
 
 class SessionManager:
     """Bounded session queue with explicit cancellation states."""
 
-    def __init__(self, progress: ProgressCallback, max_parallel: int = 2, visits_per_minute: float = 0.0) -> None:
+    def __init__(self, progress: ProgressCallback, max_parallel: int = 2, visits_per_minute: float = 0.0, max_queue: int = 100) -> None:
         if max_parallel < 1:
             raise ValueError("max_parallel must be at least 1")
         self.progress = progress
         self.max_parallel = max_parallel
+        if max_queue < max_parallel:
+            raise ValueError("max_queue must be at least max_parallel")
+        self.max_queue = max_queue
         self._rate_limiter = AsyncRateLimiter(visits_per_minute)
         self._engines: dict[str, PerformanceEngine] = {}
         self._tasks: dict[str, asyncio.Task[None]] = {}
@@ -252,6 +271,10 @@ class SessionManager:
         self._shutdown = asyncio.Event()
 
     def add(self, config: RunConfig) -> str:
+        if self._stop_all_requested:
+            raise RuntimeError("Session manager is stopping; start a new worker before adding work")
+        if len(self._tasks) >= self.max_queue:
+            raise RuntimeError("Session queue is full; reduce the target rate or wait for work to finish")
         config.validate()
         session_id = uuid.uuid4().hex[:8]
         engine = PerformanceEngine(session_id, config, self.progress, self._rate_limiter)

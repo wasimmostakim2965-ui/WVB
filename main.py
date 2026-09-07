@@ -50,6 +50,7 @@ class App(ctk.CTk):
         self._loop: asyncio.AbstractEventLoop | None = None
         self._manager: SessionManager | None = None
         self._worker: threading.Thread | None = None
+        self._save_after_id: str | None = None
         self._cards: dict[str, tuple[ctk.CTkProgressBar, ctk.CTkLabel, ctk.CTkButton]] = {}
         self._profiles: list[dict[str, object]] = []
         self._build_ui()
@@ -63,7 +64,7 @@ class App(ctk.CTk):
 
     def _entry(self, parent, key: str, row: int, default: str = ""):
         var = tk.StringVar(value=default)
-        var.trace_add("write", lambda *_: self._save_config())
+        var.trace_add("write", lambda *_: self._schedule_save())
         self._vars[key] = var
         entry = ctk.CTkEntry(parent, textvariable=var, height=32, border_width=1, border_color="#D6DEE8", fg_color="#FFFFFF", text_color="#1F2933")
         entry.grid(row=row, column=1, padx=18, pady=6, sticky="ew")
@@ -101,19 +102,19 @@ class App(ctk.CTk):
                 entry.configure(show="•")
         self._label(builder, "Readiness policy", 11)
         self._readiness = tk.StringVar(value="domcontentloaded")
-        self._readiness.trace_add("write", lambda *_: self._save_config())
+        self._readiness.trace_add("write", lambda *_: self._schedule_save())
         ctk.CTkComboBox(builder, values=["commit", "domcontentloaded", "load", "selector"], variable=self._readiness, height=32).grid(row=11, column=1, padx=18, pady=6, sticky="ew")
         self._label(builder, "Random scrolling", 12)
         self._scrolling = tk.BooleanVar(value=True)
-        self._scrolling.trace_add("write", lambda *_: self._save_config())
+        self._scrolling.trace_add("write", lambda *_: self._schedule_save())
         ctk.CTkSwitch(builder, text="Enabled", variable=self._scrolling, onvalue=True, offvalue=False, progress_color="#2563EB").grid(row=12, column=1, padx=18, pady=6, sticky="w")
         self._label(builder, "Speed", 13)
         self._speed = tk.StringVar(value="Auto")
-        self._speed.trace_add("write", lambda *_: self._save_config())
+        self._speed.trace_add("write", lambda *_: self._schedule_save())
         ctk.CTkComboBox(builder, values=["Auto", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Max"], variable=self._speed, height=32).grid(row=13, column=1, padx=18, pady=6, sticky="ew")
         self._label(builder, "Max concurrent contexts", 14)
         self._parallel = tk.StringVar(value="2")
-        self._parallel.trace_add("write", lambda *_: self._save_config())
+        self._parallel.trace_add("write", lambda *_: self._schedule_save())
         ctk.CTkComboBox(builder, values=[str(value) for value in range(1, 17)], variable=self._parallel, height=32).grid(row=14, column=1, padx=18, pady=6, sticky="ew")
         ctk.CTkLabel(builder, text="0 target rate = unlimited only within the concurrency/resource caps", text_color="#637083", wraplength=410, justify="left").grid(row=15, column=0, columnspan=2, padx=18, pady=(2, 8), sticky="w")
         ctk.CTkButton(builder, text="Save Config", command=self._save_config, height=36, fg_color="#FFFFFF", hover_color="#EAF1FF", border_width=1, border_color="#2563EB", text_color="#1D4ED8").grid(row=16, column=0, columnspan=2, padx=18, pady=(8, 6), sticky="ew")
@@ -168,6 +169,13 @@ class App(ctk.CTk):
             except (UnboundLocalError, OSError):
                 pass
 
+    def _schedule_save(self) -> None:
+        if self._loading or self._closing:
+            return
+        if self._save_after_id:
+            self.after_cancel(self._save_after_id)
+        self._save_after_id = self.after(500, self._save_config)
+
     def _config_from_form(self) -> RunConfig:
         config = RunConfig(
             target_url=self._vars["target_url"].get(), visits=int(self._vars["visits"].get()), min_duration=float(self._vars["min_duration"].get()), max_duration=float(self._vars["max_duration"].get()),
@@ -193,7 +201,12 @@ class App(ctk.CTk):
             asyncio.run_coroutine_threadsafe(self._add_to_manager(config), self._loop)
 
     async def _add_to_manager(self, config: RunConfig) -> None:
-        session_id = self._manager.add(config)
+        try:
+            session_id = self._manager.add(config)
+        except RuntimeError as exc:
+            if not self._closing:
+                self.after(0, lambda: messagebox.showwarning("Session not queued", str(exc)))
+            return
         await self._progress(session_id, 0, config.visits, "Queued")
 
     def _worker_main(self, initial: RunConfig, max_parallel: int) -> None:
@@ -246,6 +259,9 @@ class App(ctk.CTk):
 
     def _close(self) -> None:
         self._closing = True
+        if self._save_after_id:
+            self.after_cancel(self._save_after_id)
+        self._save_config()
         if self._loop and self._manager:
             self._loop.call_soon_threadsafe(self._manager.stop_all)
         if self._worker and self._worker.is_alive() and threading.current_thread() is not self._worker:

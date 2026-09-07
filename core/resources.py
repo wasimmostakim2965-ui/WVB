@@ -42,17 +42,25 @@ class ResourceMonitor:
             self._throttled = True
         return ResourceSnapshot(cpu, memory, self._throttled)
 
-    async def wait_until_ready(self) -> ResourceSnapshot:
-        """Wait before starting work; active browser visits are not force-killed."""
+    async def wait_until_ready(self, stop_event: asyncio.Event | None = None) -> ResourceSnapshot | None:
+        """Wait before starting work, returning None when cancellation is requested."""
         while True:
             snapshot = self.sample()
             if not snapshot.throttled:
                 return snapshot
             if self.status:
                 await self.status(f"Throttled · CPU {snapshot.cpu_percent:.0f}% · RAM {snapshot.memory_percent:.0f}%")
-            await asyncio.sleep(1.0)
+            if stop_event is None:
+                await asyncio.sleep(1.0)
+            else:
+                try:
+                    await asyncio.wait_for(stop_event.wait(), timeout=1.0)
+                except asyncio.TimeoutError:
+                    pass
+                if stop_event.is_set():
+                    return None
 
-    async def pace(self, speed: str | int) -> None:
+    async def pace(self, speed: str | int, stop_event: asyncio.Event | None = None) -> bool:
         """Apply user-selected pacing between visits, while preserving responsiveness."""
         if str(speed).lower() == "auto":
             delay = 0.25
@@ -61,8 +69,16 @@ class ResourceMonitor:
         else:
             level = max(1, min(10, int(speed)))
             delay = (10 - level) * 0.22
-        if delay:
+        if not delay:
+            return not stop_event.is_set() if stop_event else True
+        if stop_event is None:
             await asyncio.sleep(delay)
+            return True
+        try:
+            await asyncio.wait_for(stop_event.wait(), timeout=delay)
+        except asyncio.TimeoutError:
+            return True
+        return False
 
     @property
     def throttled(self) -> bool:
