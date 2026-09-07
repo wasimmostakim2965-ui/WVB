@@ -6,17 +6,18 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 env:
   PYTHON_VERSION: "3.12"
 
 jobs:
   build-windows:
-    name: Build Windows 7-11 package
+    name: Build single Windows executable
     runs-on: windows-latest
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -39,53 +40,22 @@ jobs:
 
       - name: Build single standalone executable
         shell: pwsh
-        # WVB.spec owns the onefile=True and console=False settings. PyInstaller
-        # rejects makespec flags such as --noconsole when a spec is supplied.
         run: pyinstaller --clean --noconfirm WVB.spec
 
-      - name: Assemble clean Windows delivery
+      - name: Verify only the executable is delivered
         shell: pwsh
         run: |
-          New-Item -ItemType Directory -Force -Path release | Out-Null
-          Copy-Item dist\WVB.exe release\WVB.exe -Force
-          $config = @{
-            target_url = "https://example.com"
-            visits = "10"
-            min_duration = "8"
-            max_duration = "15"
-            scrolling_enabled = $true
-            speed = "Auto"
-            max_parallel = 2
-          } | ConvertTo-Json
-          Set-Content -Path release\config.json -Value $config -Encoding UTF8
-          @(
-            "WVB Windows one-file desktop application"
-            "The executable embeds BrowserForge, Camoufox, Playwright, fingerprint data, and the Camoufox browser."
-            "Configuration is created beside WVB.exe on first launch."
-          ) | Set-Content release\README.txt -Encoding UTF8
-
-      - name: Bundle Microsoft C++ runtime DLLs when available
-        shell: pwsh
-        run: |
-          New-Item -ItemType Directory -Force -Path release\windows-runtime | Out-Null
-          foreach ($name in @("vcruntime140.dll", "vcruntime140_1.dll", "msvcp140.dll")) {
-            $source = "C:\Windows\System32\$name"
-            if (Test-Path $source) { Copy-Item $source release\windows-runtime\ -Force }
-          }
-
-      - name: Verify standalone Windows executable
-        shell: pwsh
-        run: |
-          if (!(Test-Path release\WVB.exe)) { throw "WVB.exe was not created" }
-          $size = (Get-Item release\WVB.exe).Length
+          if (!(Test-Path dist\WVB.exe)) { throw "WVB.exe was not created" }
+          $size = (Get-Item dist\WVB.exe).Length
           if ($size -lt 100000000) { throw "WVB.exe is unexpectedly small: $size bytes" }
           Write-Host "Verified standalone WVB.exe: $size bytes"
-          Get-ChildItem release -Recurse | Select-Object FullName, Length
 
-      - name: Upload Windows artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: WVB-windows
-          path: release/
-          if-no-files-found: error
-          retention-days: 14
+      - name: Publish direct EXE download
+        shell: pwsh
+        run: |
+          gh release view wvb-latest --repo "${{ github.repository }}" 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create wvb-latest --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "WVB Windows latest" --notes "Direct single-file Windows executable. Configuration is created beside WVB.exe on first launch." --prerelease
+          }
+          gh release upload wvb-latest dist\WVB.exe --repo "${{ github.repository }}" --clobber
+          Write-Host "Direct download: https://github.com/${{ github.repository }}/releases/download/wvb-latest/WVB.exe"
