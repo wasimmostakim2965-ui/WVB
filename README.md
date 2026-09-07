@@ -14,7 +14,7 @@ A modular Python desktop application for **authorized internal performance testi
 
 ## Installation
 
-Python 3.10+ is recommended.
+Python 3.12 is the supported build/runtime version for the pinned release toolchain.
 
 ```bash
 python -m venv .venv
@@ -64,7 +64,7 @@ The **Random scrolling** switch controls the scrolling phase independently from 
 
 ## GitHub Actions build
 
-`.github/workflows/build.yml` runs on pushes to `main` and manual dispatch. It builds Windows, Linux, and macOS artifacts, installs the Python requirements and PyInstaller, fetches the Camoufox browser, compiles the application, bundles the executable with the fetched Camoufox browser cache and `config.json`, and uploads each platform bundle as a downloadable GitHub Actions artifact.
+`.github/workflows/build.yml` runs on pushes to `main` and manual dispatch. It installs the exact versions in `requirements.txt`, verifies dependency consistency with `pip check`, fetches the Camoufox browser, builds a single-file Windows executable, computes a SHA-256 checksum, and uploads `WVB.exe` plus its checksum as a GitHub Actions artifact.
 
 ## Resource management and speed control
 
@@ -80,11 +80,11 @@ The GitHub workflow bundles the complete Camoufox cache beside each PyInstaller 
 
 ## Build artifact verification
 
-The workflow now explicitly collects both Camoufox and Playwright package resources and runs `tools/verify_bundle.py` before upload. The verifier fails the job unless the platform executable, Camoufox launcher, `properties.json`, and browser `omni.ja` assets are present. The successful run produced three non-expired artifacts: Windows (~582 MB), Ubuntu (~787 MB), and macOS (~392 MB). The GitHub API confirmed all three uploads; a local artifact download attempt returned an `unexpected EOF` from the transfer tool, not a build or upload error.
+The PyInstaller specification explicitly collects Camoufox, Playwright, BrowserForge, fingerprint data, and the fetched browser cache. CI verifies that `dist/WVB.exe` exists, rejects an accidental one-folder build, and publishes a SHA-256 checksum beside the executable.
 
 ## Windows one-file packaging
 
-The Windows workflow now builds only `WVB.exe` from `WVB.spec` with a windowed one-file PyInstaller executable. The spec collects `browserforge`, `apify_fingerprint_datapoints`, `camoufox`, and `playwright`, embeds the Camoufox browser cache, and explicitly preserves `input-network-definition.zip`, fingerprint archives, BrowserForge data, and the Playwright driver. `config.json` is created beside `WVB.exe` automatically if it does not exist.
+The Windows workflow builds only `WVB.exe` from `WVB.spec` with a windowed one-file PyInstaller executable. `config.json` is created beside `WVB.exe` automatically if it does not exist. The exact package pins are intentionally kept in `requirements.txt`; the Camoufox browser cache is fetched during the CI build and embedded by the spec.
 
 The current official Camoufox/Python toolchain is validated on Windows 10/11. Windows 7 cannot be honestly guaranteed with Python 3.12 and current Camoufox/Firefox binaries; supporting Windows 7 requires a separately pinned legacy toolchain and a real Windows 7 test runner.
 
