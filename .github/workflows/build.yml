@@ -39,7 +39,9 @@ jobs:
 
       - name: Build single standalone executable
         shell: pwsh
-        run: pyinstaller --clean --noconfirm --noconsole WVB.spec
+        # WVB.spec owns the onefile=True and console=False settings. PyInstaller
+        # rejects makespec flags such as --noconsole when a spec is supplied.
+        run: pyinstaller --clean --noconfirm WVB.spec
 
       - name: Assemble clean Windows delivery
         shell: pwsh
