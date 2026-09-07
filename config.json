@@ -5,5 +5,12 @@
   "max_duration": "15",
   "scrolling_enabled": true,
   "speed": "Auto",
-  "max_parallel": 2
+  "max_parallel": 2,
+  "visits_per_minute": 0,
+  "client_profiles": [
+    {"name": "desktop-1366", "width": 1366, "height": 768, "locale": "en-US"},
+    {"name": "desktop-1920", "width": 1920, "height": 1080, "locale": "en-US"},
+    {"name": "tablet-1024", "width": 1024, "height": 768, "locale": "en-GB"},
+    {"name": "mobile-390", "width": 390, "height": 844, "locale": "en-US"}
+  ]
 }

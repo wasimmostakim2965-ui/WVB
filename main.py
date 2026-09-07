@@ -34,7 +34,7 @@ def _bootstrap_bundled_camoufox() -> None:
 _bootstrap_bundled_camoufox()
 
 from core.behavior import BehaviorConfig
-from core.engine import RunConfig, SessionManager
+from core.engine import ClientProfile, RunConfig, SessionManager
 
 # In a PyInstaller one-file build, __file__ points into a temporary extraction
 # directory. User-owned configuration belongs beside the executable instead.
@@ -57,6 +57,7 @@ class App(ctk.CTk):
         self._manager: SessionManager | None = None
         self._worker: threading.Thread | None = None
         self._cards: dict[str, tuple[ctk.CTkProgressBar, ctk.CTkLabel, ctk.CTkButton]] = {}
+        self._profiles: list[dict[str, object]] = []
         self._build_ui()
         self._load_config()
         self._loading = False
@@ -98,12 +99,15 @@ class App(ctk.CTk):
         self._speed = tk.StringVar(value="Auto")
         self._speed.trace_add("write", lambda *_: self._save_config())
         ctk.CTkComboBox(builder, values=["Auto", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Max"], variable=self._speed, height=34, border_width=1, border_color="#D6DEE8", fg_color="#FFFFFF", text_color="#1F2933").grid(row=6, column=1, padx=18, pady=7, sticky="ew")
-        ctk.CTkLabel(builder, text="Parallel sessions", text_color="#263238").grid(row=7, column=0, padx=18, pady=7, sticky="w")
+        ctk.CTkLabel(builder, text="Max concurrent visits", text_color="#263238").grid(row=7, column=0, padx=18, pady=7, sticky="w")
         self._parallel = tk.StringVar(value="2")
         self._parallel.trace_add("write", lambda *_: self._save_config())
-        ctk.CTkComboBox(builder, values=["1", "2", "3", "4"], variable=self._parallel, height=34, border_width=1, border_color="#D6DEE8", fg_color="#FFFFFF", text_color="#1F2933").grid(row=7, column=1, padx=18, pady=7, sticky="ew")
-        ctk.CTkButton(builder, text="Save Config", command=self._save_config, height=38, fg_color="#FFFFFF", hover_color="#EAF1FF", border_width=1, border_color="#2563EB", text_color="#1D4ED8").grid(row=8, column=0, columnspan=2, padx=18, pady=(22, 8), sticky="ew")
-        ctk.CTkButton(builder, text="Start Session", command=self._start_session, height=42, fg_color="#2563EB", hover_color="#1D4ED8").grid(row=9, column=0, columnspan=2, padx=18, pady=(4, 20), sticky="ew")
+        ctk.CTkComboBox(builder, values=[str(value) for value in range(1, 9)], variable=self._parallel, height=34, border_width=1, border_color="#D6DEE8", fg_color="#FFFFFF", text_color="#1F2933").grid(row=7, column=1, padx=18, pady=7, sticky="ew")
+        self._label(builder, "Visits rate limit / minute", 8)
+        self._entry(builder, "visits_per_minute", 8, "0")
+        ctk.CTkLabel(builder, text="0 = unlimited", text_color="#637083").grid(row=9, column=1, padx=18, pady=(0, 4), sticky="w")
+        ctk.CTkButton(builder, text="Save Config", command=self._save_config, height=38, fg_color="#FFFFFF", hover_color="#EAF1FF", border_width=1, border_color="#2563EB", text_color="#1D4ED8").grid(row=10, column=0, columnspan=2, padx=18, pady=(16, 8), sticky="ew")
+        ctk.CTkButton(builder, text="Start Session", command=self._start_session, height=42, fg_color="#2563EB", hover_color="#1D4ED8").grid(row=11, column=0, columnspan=2, padx=18, pady=(4, 20), sticky="ew")
 
         dashboard = ctk.CTkFrame(self, fg_color="#FFFFFF", border_width=1, border_color="#E1E7EF", corner_radius=12)
         dashboard.grid(row=1, column=1, padx=(12, 28), pady=8, sticky="nsew")
@@ -130,12 +134,16 @@ class App(ctk.CTk):
         self._scrolling.set(bool(data.get("scrolling_enabled", True)))
         self._speed.set(str(data.get("speed", "Auto")))
         self._parallel.set(str(data.get("max_parallel", 2)))
+        self._vars["visits_per_minute"].set(str(data.get("visits_per_minute", 0)))
+        profiles = data.get("client_profiles", [])
+        if isinstance(profiles, list):
+            self._profiles = [profile for profile in profiles if isinstance(profile, dict)]
 
     def _save_config(self, *_args) -> None:
         if self._loading:
             return
         data = {key: self._vars[key].get() for key in ("target_url", "visits", "min_duration", "max_duration")}
-        data.update({"scrolling_enabled": bool(self._scrolling.get()), "speed": self._speed.get(), "max_parallel": int(self._parallel.get() or 2)})
+        data.update({"scrolling_enabled": bool(self._scrolling.get()), "speed": self._speed.get(), "max_parallel": int(self._parallel.get() or 2), "visits_per_minute": float(self._vars["visits_per_minute"].get() or 0), "client_profiles": self._profiles})
         temp_name = None
         try:
             fd, temp_name = tempfile.mkstemp(prefix="config.", suffix=".tmp", dir=ROOT)
@@ -157,6 +165,12 @@ class App(ctk.CTk):
             max_duration=float(self._vars["max_duration"].get()),
             scrolling_enabled=bool(self._scrolling.get()),
             speed=self._speed.get().lower(),
+            max_concurrent_visits=max(1, min(32, int(self._parallel.get() or 2))),
+            visits_per_minute=float(self._vars["visits_per_minute"].get() or 0),
+            client_profiles=tuple(
+                ClientProfile(str(profile["name"]), int(profile["width"]), int(profile["height"]), str(profile.get("locale", "en-US")))
+                for profile in self._profiles
+            ),
             behavior=BehaviorConfig(scrolling_enabled=bool(self._scrolling.get())),
         )
         config.validate()
@@ -169,7 +183,7 @@ class App(ctk.CTk):
             messagebox.showerror("Invalid session", str(exc))
             return
         self._save_config()
-        parallel = max(1, min(4, int(self._parallel.get() or 2)))
+        parallel = max(1, min(32, int(self._parallel.get() or 2)))
         if self._worker is None or not self._worker.is_alive():
             self._worker = threading.Thread(target=self._worker_main, args=(config, parallel), daemon=True)
             self._worker.start()
@@ -183,7 +197,7 @@ class App(ctk.CTk):
     def _worker_main(self, initial: RunConfig, max_parallel: int) -> None:
         self._loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self._loop)
-        self._manager = SessionManager(self._progress, max_parallel=max_parallel)
+        self._manager = SessionManager(self._progress, max_parallel=max_parallel, visits_per_minute=initial.visits_per_minute)
         try:
             self._manager.add(initial)
             self._loop.run_until_complete(self._manager.run_until_shutdown())

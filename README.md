@@ -91,3 +91,7 @@ The current official Camoufox/Python toolchain is validated on Windows 10/11. Wi
 ## Timing and process isolation
 
 Each visit now launches a fresh headless Camoufox process and closes its context before the next visit. Navigation uses `wait_until="networkidle"`, so the configured stay-duration timer starts only after the network-idle event. This is intended for authorized responsiveness/load testing; the application does not implement per-visit identity spoofing, analytics attribution manipulation, or proxy-pool/IP-evasion logic.
+
+## Pooled browser and traffic controls
+
+The engine now keeps one headless Camoufox process per test session and creates/closes an ephemeral context for each visit. The UI exposes a maximum concurrent-visit limit and a global visits-per-minute limiter; the latter is shared across queued sessions. Configurable QA profiles vary viewport and locale for responsive-layout coverage only. User-agent/fingerprint spoofing and proxy-pool rotation are intentionally not part of this performance-testing implementation.
