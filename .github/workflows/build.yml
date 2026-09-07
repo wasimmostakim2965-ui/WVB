@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 env:
   PYTHON_VERSION: "3.12"
@@ -15,9 +15,6 @@ jobs:
   build-windows:
     name: Build single Windows executable
     runs-on: windows-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -26,6 +23,7 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
 
       - name: Install dependencies
         shell: pwsh
@@ -42,28 +40,23 @@ jobs:
         shell: pwsh
         run: pyinstaller --clean --noconfirm WVB.spec
 
-      - name: Verify only the executable is delivered
+      - name: Verify executable
         shell: pwsh
         run: |
           if (!(Test-Path dist\WVB.exe)) { throw "WVB.exe was not created" }
           $size = (Get-Item dist\WVB.exe).Length
           if ($size -lt 100000000) { throw "WVB.exe is unexpectedly small: $size bytes" }
-          Write-Host "Verified standalone WVB.exe: $size bytes"
+          $hash = (Get-FileHash dist\WVB.exe -Algorithm SHA256).Hash
+          "$hash  WVB.exe" | Out-File dist\WVB.exe.sha256 -Encoding ascii
+          Write-Host "Verified WVB.exe: $size bytes"
+          Write-Host "SHA256: $hash"
 
-      - name: Publish direct EXE download
-        shell: pwsh
-        run: |
-          gh release view wvb-latest --repo "${{ github.repository }}" 2>$null
-          if ($LASTEXITCODE -ne 0) {
-            gh release create wvb-latest --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "WVB Windows latest" --notes "Direct single-file Windows executable. Configuration is created beside WVB.exe on first launch."
-          }
-          gh release upload wvb-latest dist\WVB.exe --repo "${{ github.repository }}" --clobber
-          $download = "https://github.com/${{ github.repository }}/releases/download/wvb-latest/WVB.exe"
-          Write-Host "Direct download: $download"
-          @"
-          ## WVB Windows download
-
-          **[Download the single-file WVB.exe directly]($download)**
-
-          No ZIP, DLL, config, or README download is required.
-          "@ | Out-File -FilePath $env:GITHUB_STEP_SUMMARY -Encoding utf8 -Append
+      - name: Upload standalone artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: WVB-windows-${{ github.sha }}
+          path: |
+            dist/WVB.exe
+            dist/WVB.exe.sha256
+          if-no-files-found: error
+          retention-days: 14

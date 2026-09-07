@@ -95,3 +95,17 @@ Each visit now launches a fresh headless Camoufox process and closes its context
 ## Pooled browser and traffic controls
 
 The engine now keeps one headless Camoufox process per test session and creates/closes an ephemeral context for each visit. The UI exposes a maximum concurrent-visit limit and a global visits-per-minute limiter; the latter is shared across queued sessions. Configurable QA profiles vary viewport and locale for responsive-layout coverage only. User-agent/fingerprint spoofing and proxy-pool rotation are intentionally not part of this performance-testing implementation.
+
+## Safe bounded execution model
+
+Each session uses one pooled headless Camoufox process and creates a fresh ephemeral browser context for every visit. Contexts are closed in a `finally` block before the next visit. The suite does not implement Tor, circuit rotation, identity masking, proxy-pool evasion, or unlimited dispatch.
+
+The optional proxy field accepts Playwright-compatible HTTP(S), SOCKS4, or SOCKS5 URLs. Proxy credentials may be supplied in the URL or in the dedicated local configuration fields. Authenticated proxy credentials are stored locally in `config.json`; protect that file using normal operating-system file permissions.
+
+The target rate is a global visits-per-minute limiter. It is combined with the maximum concurrent-context limit and CPU/RAM guardrails. A zero rate means no voluntary rate delay, not unlimited machine resources: the concurrency and resource limits still apply.
+
+Readiness is configurable as `commit`, `domcontentloaded`, `load`, or `selector`. Every request receives an explicit `X-WVB-Test-Marker` and `X-WVB-Session` header so first-party analytics can identify synthetic test traffic without pretending it is ordinary production traffic.
+
+The dashboard reports successful, failed, timed-out, cancelled, and average-latency metrics. Failed visits are not counted as successful. STOP ALL reports queued work as cancelled and waits for active browser contexts to close before the desktop process exits.
+
+The Windows workflow publishes a single `WVB.exe` artifact together with a SHA-256 checksum. Release publication is intentionally separate from ordinary pushes and should be performed only through a protected, reviewed release workflow.

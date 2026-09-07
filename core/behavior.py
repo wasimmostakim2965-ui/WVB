@@ -23,8 +23,8 @@ class BehaviorConfig:
             raise ValueError("Pause range is invalid")
         if self.scroll_step_min < 1 or self.scroll_step_max < self.scroll_step_min:
             raise ValueError("Scroll range is invalid")
-        if self.max_scrolls < 1 or self.pointer_moves < 1:
-            raise ValueError("Behavior counts must be at least 1")
+        if self.max_scrolls < 1 or self.max_scrolls > 200 or self.pointer_moves < 1 or self.pointer_moves > 100:
+            raise ValueError("Behavior counts are outside safe bounds")
 
 
 def _cubic(p0: float, p1: float, p2: float, p3: float, t: float) -> float:

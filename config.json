@@ -3,14 +3,20 @@
   "visits": "10",
   "min_duration": "8",
   "max_duration": "15",
+  "proxy_server": "",
+  "proxy_username": "",
+  "proxy_password": "",
+  "visits_per_minute": "0",
+  "test_marker": "WVB-internal-test",
+  "readiness_policy": "domcontentloaded",
+  "readiness_selector": "",
   "scrolling_enabled": true,
   "speed": "Auto",
   "max_parallel": 2,
-  "visits_per_minute": 0,
   "client_profiles": [
-    {"name": "desktop-1366", "width": 1366, "height": 768, "locale": "en-US"},
-    {"name": "desktop-1920", "width": 1920, "height": 1080, "locale": "en-US"},
-    {"name": "tablet-1024", "width": 1024, "height": 768, "locale": "en-GB"},
-    {"name": "mobile-390", "width": 390, "height": 844, "locale": "en-US"}
+    {"name": "desktop-1366", "width": 1366, "height": 768, "locale": "en-US", "user_agent": ""},
+    {"name": "desktop-1920", "width": 1920, "height": 1080, "locale": "en-US", "user_agent": ""},
+    {"name": "tablet-1024", "width": 1024, "height": 768, "locale": "en-GB", "user_agent": ""},
+    {"name": "mobile-390", "width": 390, "height": 844, "locale": "en-US", "user_agent": ""}
   ]
 }
