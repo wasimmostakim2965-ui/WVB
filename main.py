@@ -23,8 +23,9 @@ def _bootstrap_bundled_camoufox() -> None:
         return
     try:
         from camoufox.pkgman import INSTALL_DIR
-        if not INSTALL_DIR.exists():
-            shutil.copytree(bundled_cache, INSTALL_DIR, dirs_exist_ok=True)
+        # Merge on every launch so a partial/stale user cache cannot hide the
+        # browser shipped inside the one-file executable.
+        shutil.copytree(bundled_cache, INSTALL_DIR, dirs_exist_ok=True)
     except (ImportError, OSError):
         # Normal source execution can still use `camoufox fetch` when no bundle exists.
         return
@@ -35,7 +36,9 @@ _bootstrap_bundled_camoufox()
 from core.behavior import BehaviorConfig
 from core.engine import RunConfig, SessionManager
 
-ROOT = Path(__file__).resolve().parent
+# In a PyInstaller one-file build, __file__ points into a temporary extraction
+# directory. User-owned configuration belongs beside the executable instead.
+ROOT = Path(sys.executable).resolve().parent if getattr(sys, "frozen", False) else Path(__file__).resolve().parent
 CONFIG_PATH = ROOT / "config.json"
 
 

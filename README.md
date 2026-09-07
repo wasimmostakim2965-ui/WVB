@@ -81,3 +81,9 @@ The GitHub workflow bundles the complete Camoufox cache beside each PyInstaller 
 ## Build artifact verification
 
 The workflow now explicitly collects both Camoufox and Playwright package resources and runs `tools/verify_bundle.py` before upload. The verifier fails the job unless the platform executable, Camoufox launcher, `properties.json`, and browser `omni.ja` assets are present. The successful run produced three non-expired artifacts: Windows (~582 MB), Ubuntu (~787 MB), and macOS (~392 MB). The GitHub API confirmed all three uploads; a local artifact download attempt returned an `unexpected EOF` from the transfer tool, not a build or upload error.
+
+## Windows one-file packaging
+
+The Windows workflow now builds only `WVB.exe` from `WVB.spec` with a windowed one-file PyInstaller executable. The spec collects `browserforge`, `apify_fingerprint_datapoints`, `camoufox`, and `playwright`, embeds the Camoufox browser cache, and explicitly preserves `input-network-definition.zip`, fingerprint archives, BrowserForge data, and the Playwright driver. `config.json` is created beside `WVB.exe` automatically if it does not exist.
+
+The current official Camoufox/Python toolchain is validated on Windows 10/11. Windows 7 cannot be honestly guaranteed with Python 3.12 and current Camoufox/Firefox binaries; supporting Windows 7 requires a separately pinned legacy toolchain and a real Windows 7 test runner.
