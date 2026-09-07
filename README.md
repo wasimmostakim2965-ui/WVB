@@ -87,3 +87,7 @@ The workflow now explicitly collects both Camoufox and Playwright package resour
 The Windows workflow now builds only `WVB.exe` from `WVB.spec` with a windowed one-file PyInstaller executable. The spec collects `browserforge`, `apify_fingerprint_datapoints`, `camoufox`, and `playwright`, embeds the Camoufox browser cache, and explicitly preserves `input-network-definition.zip`, fingerprint archives, BrowserForge data, and the Playwright driver. `config.json` is created beside `WVB.exe` automatically if it does not exist.
 
 The current official Camoufox/Python toolchain is validated on Windows 10/11. Windows 7 cannot be honestly guaranteed with Python 3.12 and current Camoufox/Firefox binaries; supporting Windows 7 requires a separately pinned legacy toolchain and a real Windows 7 test runner.
+
+## Timing and process isolation
+
+Each visit now launches a fresh headless Camoufox process and closes its context before the next visit. Navigation uses `wait_until="networkidle"`, so the configured stay-duration timer starts only after the network-idle event. This is intended for authorized responsiveness/load testing; the application does not implement per-visit identity spoofing, analytics attribution manipulation, or proxy-pool/IP-evasion logic.

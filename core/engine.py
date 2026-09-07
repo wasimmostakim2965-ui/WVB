@@ -93,41 +93,48 @@ class PerformanceEngine:
             pointer_moves=self.config.behavior.pointer_moves,
         )
         await self.progress(self.session_id, 0, self.config.visits, "Starting")
-        async with AsyncCamoufox(headless=True, proxy=self.config.proxy(), humanize=True, enable_cache=False) as browser:
-            for visit in range(1, self.config.visits + 1):
-                if self._stop_requested.is_set():
-                    await self.progress(self.session_id, visit - 1, self.config.visits, "Stopped")
-                    return
-                snapshot = await self._resources.wait_until_ready()
-                await self.progress(
-                    self.session_id,
-                    visit - 1,
-                    self.config.visits,
-                    f"Ready · CPU {snapshot.cpu_percent:.0f}% · RAM {snapshot.memory_percent:.0f}%",
-                )
-                await self._resources.pace(self.config.speed)
-                duration = random.uniform(self.config.min_duration, self.config.max_duration)
-                context = None
-                try:
-                    await self.progress(self.session_id, visit - 1, self.config.visits, f"Launching visit {visit}")
+        for visit in range(1, self.config.visits + 1):
+            if self._stop_requested.is_set():
+                await self.progress(self.session_id, visit - 1, self.config.visits, "Stopped")
+                return
+            snapshot = await self._resources.wait_until_ready()
+            await self.progress(
+                self.session_id,
+                visit - 1,
+                self.config.visits,
+                f"Ready · CPU {snapshot.cpu_percent:.0f}% · RAM {snapshot.memory_percent:.0f}%",
+            )
+            await self._resources.pace(self.config.speed)
+            duration = random.uniform(self.config.min_duration, self.config.max_duration)
+            context = None
+            try:
+                await self.progress(self.session_id, visit - 1, self.config.visits, f"Launching fresh browser {visit}")
+                # A fresh browser process per visit gives the strongest local
+                # cleanup boundary. The stay timer starts only after networkidle.
+                async with AsyncCamoufox(
+                    headless=True,
+                    proxy=self.config.proxy(),
+                    humanize=True,
+                    enable_cache=False,
+                ) as browser:
                     context = await browser.new_context()
                     page = await context.new_page()
                     page.set_default_navigation_timeout(self.config.navigation_timeout_ms)
-                    await page.goto(self.config.target_url.strip(), wait_until="domcontentloaded")
-                    await self.progress(self.session_id, visit - 1, self.config.visits, f"Active · {duration:.1f}s")
+                    await page.goto(self.config.target_url.strip(), wait_until="networkidle")
+                    await self.progress(self.session_id, visit - 1, self.config.visits, f"Network idle · Active {duration:.1f}s")
                     await exercise_page(page, duration, behavior)
-                except asyncio.CancelledError:
-                    raise
-                except Exception as exc:
-                    LOGGER.exception("Session %s visit %d failed", self.session_id, visit)
-                    await self.progress(self.session_id, visit - 1, self.config.visits, f"Failed · {type(exc).__name__}")
-                finally:
-                    if context is not None:
-                        try:
-                            await context.close()
-                        except Exception:
-                            LOGGER.exception("Session %s context cleanup failed", self.session_id)
-                await self.progress(self.session_id, visit, self.config.visits, f"Completed visit {visit}")
+            except asyncio.CancelledError:
+                raise
+            except Exception as exc:
+                LOGGER.exception("Session %s visit %d failed", self.session_id, visit)
+                await self.progress(self.session_id, visit - 1, self.config.visits, f"Failed · {type(exc).__name__}")
+            finally:
+                if context is not None:
+                    try:
+                        await context.close()
+                    except Exception:
+                        LOGGER.exception("Session %s context cleanup failed", self.session_id)
+            await self.progress(self.session_id, visit, self.config.visits, f"Completed visit {visit}")
         await self.progress(self.session_id, self.config.visits, self.config.visits, "Complete")
 
 
