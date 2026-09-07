@@ -55,7 +55,7 @@ jobs:
         run: |
           gh release view wvb-latest --repo "${{ github.repository }}" 2>$null
           if ($LASTEXITCODE -ne 0) {
-            gh release create wvb-latest --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "WVB Windows latest" --notes "Direct single-file Windows executable. Configuration is created beside WVB.exe on first launch." --prerelease
+            gh release create wvb-latest --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "WVB Windows latest" --notes "Direct single-file Windows executable. Configuration is created beside WVB.exe on first launch."
           }
           gh release upload wvb-latest dist\WVB.exe --repo "${{ github.repository }}" --clobber
           Write-Host "Direct download: https://github.com/${{ github.repository }}/releases/download/wvb-latest/WVB.exe"
