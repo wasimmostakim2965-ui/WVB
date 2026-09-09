@@ -78,6 +78,8 @@ class RunConfig:
     proxy_server: str = ""
     proxy_username: str = ""
     proxy_password: str = ""
+    proxy_mode: str = "none"
+    proxy_list: tuple[str, ...] = ()
     navigation_timeout_ms: int = 45_000
     max_concurrent_visits: int = 2
     visits_per_minute: float = 0.0
@@ -107,6 +109,10 @@ class RunConfig:
             raise ValueError("A readiness selector is required when selector policy is selected")
         if not self.test_marker.strip() or len(self.test_marker) > 128:
             raise ValueError("Test marker is required and must be at most 128 characters")
+        if self.proxy_mode not in {"none", "static", "rotating"}:
+            raise ValueError("Proxy mode must be none, static, or rotating")
+        if self.proxy_mode == "static" and not self.proxy_list:
+            raise ValueError("Static proxy mode requires at least one proxy entry")
         self.proxy()
         self.behavior.validate()
         for profile in self.client_profiles:
@@ -121,14 +127,28 @@ class RunConfig:
 
     def proxy(self) -> dict[str, str] | None:
         server = self.proxy_server.strip()
+        username = self.proxy_username.strip()
+        password = self.proxy_password
+        if self.proxy_mode == "none":
+            return None
+        if self.proxy_mode == "static":
+            entry = random.choice(self.proxy_list).strip()
+            parts = entry.split(":", 3)
+            if len(parts) != 4 or not parts[0] or not parts[1]:
+                raise ValueError("Static proxy entries must use host:port:user:pass format")
+            server = f"http://{parts[0]}:{parts[1]}"
+            username, password = parts[2], parts[3]
+        elif self.proxy_mode == "rotating":
+            if not self.proxy_server.strip() or not self.proxy_server.strip().startswith(("http://", "https://", "socks4://", "socks5://")):
+                server = f"http://{self.proxy_server.strip()}"
         if not server:
             return None
         parsed = urlparse(server)
         if parsed.scheme not in {"http", "https", "socks4", "socks5"} or not parsed.hostname or not parsed.port:
             raise ValueError("Proxy must use http(s), socks4, or socks5 URL syntax with a port")
         result = {"server": f"{parsed.scheme}://{parsed.hostname}:{parsed.port}"}
-        username = self.proxy_username.strip() or (unquote(parsed.username) if parsed.username else "")
-        password = self.proxy_password or (unquote(parsed.password) if parsed.password else "")
+        username = username or (unquote(parsed.username) if parsed.username else "")
+        password = password or (unquote(parsed.password) if parsed.password else "")
         if username:
             result["username"] = username
         if password:

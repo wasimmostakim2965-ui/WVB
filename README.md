@@ -31,7 +31,7 @@ On Linux, install the system packages required by CustomTkinter/Tk if they are n
 python main.py
 ```
 
-Set an internal target URL and conservative visit count/duration values. Proxy server values should use Playwright's format, such as `http://127.0.0.1:8080` or `socks5://127.0.0.1:1080`. Credentials are stored in local `config.json`; protect that file when using authenticated proxies.
+Set an internal target URL and conservative visit count/duration values. Proxy Settings supports **None**, **Static Proxy**, and **Rotating Proxy**. Static Proxy accepts one `host:port:user:pass` entry per line and selects one entry for each test session. Rotating Proxy accepts a provider gateway host/IP, port, username, and password; the provider is responsible for any upstream rotation. WVB does not rotate Tor circuits or identities. Credentials are stored in local `config.json`; protect that file when using authenticated proxies.
 
 ## Project layout
 
@@ -80,7 +80,7 @@ The GitHub workflow bundles the complete Camoufox cache beside each PyInstaller 
 
 ## Build artifact verification
 
-The PyInstaller specification explicitly collects Camoufox, Playwright, BrowserForge, fingerprint data, and the fetched browser cache. CI verifies that `dist/WVB.exe` exists, rejects an accidental one-folder build, and publishes a SHA-256 checksum beside the executable.
+The PyInstaller specification explicitly collects Camoufox, `language_tags` locale JSON registries, Playwright, BrowserForge, fingerprint data, and the fetched browser cache. The locale registry is required by `camoufox.geolocation` at startup; omitting it causes the `_MEI...` `FileNotFoundError` shown by older builds. CI verifies that `dist/WVB.exe` exists, rejects an accidental one-folder build, and publishes a SHA-256 checksum beside the executable.
 
 ## Windows one-file packaging
 

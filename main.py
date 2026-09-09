@@ -88,37 +88,52 @@ class App(ctk.CTk):
             ("Target visits", "visits", "10"),
             ("Min stay (seconds)", "min_duration", "8"),
             ("Max stay (seconds)", "max_duration", "15"),
-            ("Proxy URL (optional)", "proxy_server", ""),
-            ("Proxy username", "proxy_username", ""),
-            ("Proxy password", "proxy_password", ""),
-            ("Target rate / minute", "visits_per_minute", "0"),
-            ("Test marker", "test_marker", "WVB-internal-test"),
-            ("Readiness selector", "readiness_selector", ""),
         ]
         for row, (label, key, default) in enumerate(fields, start=1):
             self._label(builder, label, row)
             entry = self._entry(builder, key, row, default)
             if key == "proxy_password":
                 entry.configure(show="•")
-        self._label(builder, "Readiness policy", 11)
+        self._label(builder, "Proxy mode", 5)
+        self._proxy_mode = tk.StringVar(value="none")
+        self._proxy_mode.trace_add("write", lambda *_: (self._schedule_save(), self._update_proxy_mode()))
+        ctk.CTkComboBox(builder, values=["None", "Static Proxy", "Rotating Proxy"], variable=self._proxy_mode, height=32).grid(row=5, column=1, padx=18, pady=6, sticky="ew")
+        self._label(builder, "Proxy host / gateway", 6)
+        self._entry(builder, "proxy_server", 6, "")
+        self._label(builder, "Proxy username", 7)
+        self._entry(builder, "proxy_username", 7, "")
+        self._label(builder, "Proxy password", 8)
+        proxy_password_entry = self._entry(builder, "proxy_password", 8, "")
+        proxy_password_entry.configure(show="•")
+        self._label(builder, "Static proxy list (host:port:user:pass)", 9)
+        self._proxy_list = ctk.CTkTextbox(builder, height=90, border_width=1, border_color="#D6DEE8", fg_color="#FFFFFF", text_color="#1F2933")
+        self._proxy_list.grid(row=9, column=1, padx=18, pady=6, sticky="ew")
+        self._label(builder, "Target rate / minute", 10)
+        self._entry(builder, "visits_per_minute", 10, "0")
+        self._label(builder, "Test marker", 11)
+        self._entry(builder, "test_marker", 11, "WVB-internal-test")
+        self._label(builder, "Readiness selector", 12)
+        self._entry(builder, "readiness_selector", 12, "")
+        self._label(builder, "Readiness policy", 13)
         self._readiness = tk.StringVar(value="domcontentloaded")
         self._readiness.trace_add("write", lambda *_: self._schedule_save())
-        ctk.CTkComboBox(builder, values=["commit", "domcontentloaded", "load", "selector"], variable=self._readiness, height=32).grid(row=11, column=1, padx=18, pady=6, sticky="ew")
-        self._label(builder, "Random scrolling", 12)
+        ctk.CTkComboBox(builder, values=["commit", "domcontentloaded", "load", "selector"], variable=self._readiness, height=32).grid(row=13, column=1, padx=18, pady=6, sticky="ew")
+        self._label(builder, "Random scrolling", 14)
         self._scrolling = tk.BooleanVar(value=True)
         self._scrolling.trace_add("write", lambda *_: self._schedule_save())
-        ctk.CTkSwitch(builder, text="Enabled", variable=self._scrolling, onvalue=True, offvalue=False, progress_color="#2563EB").grid(row=12, column=1, padx=18, pady=6, sticky="w")
-        self._label(builder, "Speed", 13)
+        ctk.CTkSwitch(builder, text="Enabled", variable=self._scrolling, onvalue=True, offvalue=False, progress_color="#2563EB").grid(row=14, column=1, padx=18, pady=6, sticky="w")
+        self._label(builder, "Speed", 15)
         self._speed = tk.StringVar(value="Auto")
         self._speed.trace_add("write", lambda *_: self._schedule_save())
-        ctk.CTkComboBox(builder, values=["Auto", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Max"], variable=self._speed, height=32).grid(row=13, column=1, padx=18, pady=6, sticky="ew")
-        self._label(builder, "Max concurrent contexts", 14)
+        ctk.CTkComboBox(builder, values=["Auto", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "Max"], variable=self._speed, height=32).grid(row=15, column=1, padx=18, pady=6, sticky="ew")
+        self._label(builder, "Max concurrent contexts", 16)
         self._parallel = tk.StringVar(value="2")
         self._parallel.trace_add("write", lambda *_: self._schedule_save())
-        ctk.CTkComboBox(builder, values=[str(value) for value in range(1, 17)], variable=self._parallel, height=32).grid(row=14, column=1, padx=18, pady=6, sticky="ew")
-        ctk.CTkLabel(builder, text="0 target rate = unlimited only within the concurrency/resource caps", text_color="#637083", wraplength=410, justify="left").grid(row=15, column=0, columnspan=2, padx=18, pady=(2, 8), sticky="w")
-        ctk.CTkButton(builder, text="Save Config", command=self._save_config, height=36, fg_color="#FFFFFF", hover_color="#EAF1FF", border_width=1, border_color="#2563EB", text_color="#1D4ED8").grid(row=16, column=0, columnspan=2, padx=18, pady=(8, 6), sticky="ew")
-        ctk.CTkButton(builder, text="Start Session", command=self._start_session, height=42, fg_color="#2563EB", hover_color="#1D4ED8").grid(row=17, column=0, columnspan=2, padx=18, pady=(4, 18), sticky="ew")
+        ctk.CTkComboBox(builder, values=[str(value) for value in range(1, 17)], variable=self._parallel, height=32).grid(row=16, column=1, padx=18, pady=6, sticky="ew")
+        ctk.CTkLabel(builder, text="Static selects one configured entry per session. Rotating uses the provider gateway; WVB does not rotate circuits or identities.", text_color="#637083", wraplength=410, justify="left").grid(row=17, column=0, columnspan=2, padx=18, pady=(2, 8), sticky="w")
+        ctk.CTkButton(builder, text="Save Config", command=self._save_config, height=36, fg_color="#FFFFFF", hover_color="#EAF1FF", border_width=1, border_color="#2563EB", text_color="#1D4ED8").grid(row=18, column=0, columnspan=2, padx=18, pady=(8, 6), sticky="ew")
+        ctk.CTkButton(builder, text="Start Session", command=self._start_session, height=42, fg_color="#2563EB", hover_color="#1D4ED8").grid(row=19, column=0, columnspan=2, padx=18, pady=(4, 18), sticky="ew")
+        self._update_proxy_mode()
 
         dashboard = ctk.CTkFrame(self, fg_color="#FFFFFF", border_width=1, border_color="#E1E7EF", corner_radius=12)
         dashboard.grid(row=1, column=1, padx=(12, 28), pady=8, sticky="nsew")
@@ -146,6 +161,11 @@ class App(ctk.CTk):
         self._speed.set(str(data.get("speed", "Auto")))
         self._parallel.set(str(data.get("max_parallel", 2)))
         self._readiness.set(str(data.get("readiness_policy", "domcontentloaded")))
+        self._proxy_mode.set(str(data.get("proxy_mode", "none")))
+        proxy_lines = data.get("proxy_list", [])
+        if isinstance(proxy_lines, list):
+            self._proxy_list.insert("1.0", "\n".join(str(line) for line in proxy_lines))
+        self._update_proxy_mode()
         profiles = data.get("client_profiles", [])
         if isinstance(profiles, list):
             self._profiles = [profile for profile in profiles if isinstance(profile, dict)]
@@ -155,7 +175,7 @@ class App(ctk.CTk):
             return
         try:
             data = {key: self._vars[key].get() for key in self._vars}
-            data.update({"scrolling_enabled": bool(self._scrolling.get()), "speed": self._speed.get(), "max_parallel": int(self._parallel.get() or 2), "readiness_policy": self._readiness.get(), "client_profiles": self._profiles})
+            data.update({"scrolling_enabled": bool(self._scrolling.get()), "speed": self._speed.get(), "max_parallel": int(self._parallel.get() or 2), "readiness_policy": self._readiness.get(), "proxy_mode": self._proxy_mode.get().lower().replace(" proxy", ""), "proxy_list": self._proxy_list.get("1.0", "end-1c").splitlines(), "client_profiles": self._profiles})
             fd, temp_name = tempfile.mkstemp(prefix="config.", suffix=".tmp", dir=ROOT)
             with os.fdopen(fd, "w", encoding="utf-8") as handle:
                 json.dump(data, handle, indent=2)
@@ -176,10 +196,22 @@ class App(ctk.CTk):
             self.after_cancel(self._save_after_id)
         self._save_after_id = self.after(500, self._save_config)
 
+    def _update_proxy_mode(self) -> None:
+        mode = self._proxy_mode.get().lower()
+        static = mode.startswith("static")
+        self._proxy_list.configure(state="normal" if static else "disabled")
+
+    def _proxy_values(self) -> tuple[str, tuple[str, ...]]:
+        mode = self._proxy_mode.get().lower().replace(" proxy", "")
+        entries = tuple(line.strip() for line in self._proxy_list.get("1.0", "end-1c").splitlines() if line.strip())
+        return mode, entries
+
     def _config_from_form(self) -> RunConfig:
+        proxy_mode, proxy_list = self._proxy_values()
         config = RunConfig(
             target_url=self._vars["target_url"].get(), visits=int(self._vars["visits"].get()), min_duration=float(self._vars["min_duration"].get()), max_duration=float(self._vars["max_duration"].get()),
             scrolling_enabled=bool(self._scrolling.get()), speed=self._speed.get().lower(), proxy_server=self._vars["proxy_server"].get(), proxy_username=self._vars["proxy_username"].get(), proxy_password=self._vars["proxy_password"].get(),
+            proxy_mode=proxy_mode, proxy_list=proxy_list,
             max_concurrent_visits=max(1, min(32, int(self._parallel.get() or 2))), visits_per_minute=float(self._vars["visits_per_minute"].get() or 0), readiness_policy=self._readiness.get(), readiness_selector=self._vars["readiness_selector"].get(), test_marker=self._vars["test_marker"].get(),
             client_profiles=tuple(ClientProfile(str(p["name"]), int(p["width"]), int(p["height"]), str(p.get("locale", "en-US")), str(p.get("user_agent", ""))) for p in self._profiles), behavior=BehaviorConfig(scrolling_enabled=bool(self._scrolling.get())),
         )

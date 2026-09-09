@@ -13,11 +13,22 @@ from camoufox.pkgman import INSTALL_DIR
 binaries = []
 datas = []
 hiddenimports = []
-for package in ("browserforge", "apify_fingerprint_datapoints", "camoufox", "playwright"):
+for package in ("browserforge", "apify_fingerprint_datapoints", "camoufox", "language_tags", "playwright"):
     package_datas, package_binaries, package_hidden = collect_all(package)
     datas.extend(package_datas)
     binaries.extend(package_binaries)
     hiddenimports.extend(package_hidden)
+
+# camoufox.geolocation imports language_tags at startup. Its JSON registry is
+# runtime data, not Python bytecode, and must be present in a one-file build.
+language_tags_spec = find_spec("language_tags")
+if language_tags_spec and language_tags_spec.submodule_search_locations:
+    language_tags_root = Path(next(iter(language_tags_spec.submodule_search_locations))).resolve()
+    for data_file in language_tags_root.rglob("*.json"):
+        destination = str(Path("language_tags") / data_file.relative_to(language_tags_root).parent)
+        entry = (str(data_file), destination)
+        if entry not in datas:
+            datas.append(entry)
 
 # Keep the exact browser installation layout expected by camoufox.pkgman.
 # Tree emits TOC triples; Analysis expects (source, destination) data pairs.
