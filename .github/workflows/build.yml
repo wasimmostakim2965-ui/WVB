@@ -36,6 +36,14 @@ jobs:
         shell: pwsh
         run: camoufox fetch
 
+      - name: Run browser-free contract tests
+        shell: pwsh
+        run: python tests_contracts.py
+
+      - name: Run real localhost Camoufox smoke test
+        shell: pwsh
+        run: python tests_smoke.py
+
       - name: Build single standalone executable
         shell: pwsh
         run: pyinstaller --clean --noconfirm WVB.spec
@@ -51,6 +59,24 @@ jobs:
           "$hash  WVB.exe" | Out-File dist\WVB.exe.sha256 -Encoding ascii
           Write-Host "Verified WVB.exe: $size bytes"
           Write-Host "SHA256: $hash"
+
+      - name: Run frozen import/startup smoke test
+        shell: pwsh
+        timeout-minutes: 2
+        run: .\dist\WVB.exe --startup-check
+
+      - name: Run frozen UI smoke test
+        shell: pwsh
+        timeout-minutes: 2
+        run: .\dist\WVB.exe --ui-smoke-test
+
+      - name: Verify checksum file
+        shell: pwsh
+        run: |
+          $expected = ((Get-Content dist\WVB.exe.sha256).Split(' ')[0]).Trim()
+          $actual = (Get-FileHash dist\WVB.exe -Algorithm SHA256).Hash
+          if ($expected -ne $actual) { throw "SHA-256 mismatch: expected $expected, got $actual" }
+          Write-Host "SHA-256 verified: $actual"
 
       - name: Upload standalone artifact
         uses: actions/upload-artifact@v4

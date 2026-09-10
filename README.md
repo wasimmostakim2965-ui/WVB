@@ -86,6 +86,10 @@ The PyInstaller specification explicitly collects Camoufox, `language_tags` loca
 
 The Windows workflow builds only `WVB.exe` from `WVB.spec` with a windowed one-file PyInstaller executable. `config.json` is created beside `WVB.exe` automatically if it does not exist. The exact package pins are intentionally kept in `requirements.txt`; the Camoufox browser cache is fetched during the CI build and embedded by the spec.
 
+## Release acceptance gates
+
+The build is not considered releasable merely because PyInstaller exits successfully. Before artifact upload, CI runs browser-free contract tests, a real localhost Camoufox smoke test using the fetched browser, the frozen executable with `--startup-check` to exercise the extracted `_MEI...` import graph, the frozen executable with `--ui-smoke-test` to construct and destroy the actual CustomTkinter UI, and an independent SHA-256 verification. Any failed gate prevents artifact upload.
+
 The current official Camoufox/Python toolchain is validated on Windows 10/11. Windows 7 cannot be honestly guaranteed with Python 3.12 and current Camoufox/Firefox binaries; supporting Windows 7 requires a separately pinned legacy toolchain and a real Windows 7 test runner.
 
 ## Timing and process isolation

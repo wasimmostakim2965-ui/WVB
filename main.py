@@ -32,6 +32,11 @@ _bootstrap_bundled_camoufox()
 from core.behavior import BehaviorConfig
 from core.engine import ClientProfile, RunConfig, SessionManager
 
+# PyInstaller acceptance modes deliberately stop before normal GUI execution.
+# They exercise the frozen import graph and, for the UI mode, widget creation.
+if "--startup-check" in sys.argv:
+    raise SystemExit(0)
+
 ROOT = Path(sys.executable).resolve().parent if getattr(sys, "frozen", False) else Path(__file__).resolve().parent
 CONFIG_PATH = ROOT / "config.json"
 
@@ -302,4 +307,9 @@ class App(ctk.CTk):
 
 
 if __name__ == "__main__":
-    App().mainloop()
+    if "--ui-smoke-test" in sys.argv:
+        app = App()
+        app.after(1000, app.destroy)
+        app.mainloop()
+    else:
+        App().mainloop()
