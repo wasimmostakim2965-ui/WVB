@@ -52,7 +52,8 @@ async def move_pointer(page: Any, config, deadline=None, stop_event=None):
         start=(random.uniform(0,max(1,viewport["width"])),random.uniform(0,max(1,viewport["height"])))
         end=(random.uniform(0,max(1,viewport["width"])),random.uniform(0,max(1,viewport["height"])))
         for x,y in bezier_points(start,end,random.randint(12,30)):
-            if (deadline is not None and asyncio.get_running_loop().time()>=deadline) or (stop_event and stop_event.is_set()): return False
+            if stop_event and stop_event.is_set(): return False
+            if deadline is not None and asyncio.get_running_loop().time()>=deadline: return True
             await page.mouse.move(x,y)
             if not await _wait(random.uniform(.004,.018),stop_event): return False
     return True
@@ -60,7 +61,8 @@ async def move_pointer(page: Any, config, deadline=None, stop_event=None):
 async def natural_scroll(page: Any, config, deadline, stop_event=None):
     if not config.scrolling_enabled: return True
     for _ in range(random.randint(1,config.max_scrolls)):
-        if asyncio.get_running_loop().time()>=deadline or (stop_event and stop_event.is_set()): return False
+        if stop_event and stop_event.is_set(): return False
+        if asyncio.get_running_loop().time()>=deadline: return True
         await page.mouse.wheel(0,random.randint(config.scroll_step_min,config.scroll_step_max))
         if not await human_pause(config,deadline,stop_event): return False
         if random.random()<.18 and asyncio.get_running_loop().time()<deadline:

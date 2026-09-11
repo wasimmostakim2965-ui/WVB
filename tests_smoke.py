@@ -50,7 +50,7 @@ async def main() -> None:
         server.server_close()
 
     assert len({event.split(":", 1)[0] for event in events}) == 2, events
-    assert sum(event.endswith(":Complete") for event in events) == 2, events
+    assert sum(":Complete ·" in event for event in events) == 2, events
     print("REAL CAMOUFOX MULTI-SESSION SMOKE TEST PASSED")
     print("events:", len(events))
 
