@@ -5,6 +5,8 @@ import asyncio
 
 from core.behavior import BehaviorConfig, human_pause
 from core.engine import RunConfig
+from core.proxy import ProxySessionManager
+from core.resources import ResourceMonitor
 
 
 def make_config(**changes) -> RunConfig:
@@ -43,6 +45,21 @@ def test_readiness_contracts() -> None:
         pass
     else:
         raise AssertionError("selector readiness without a selector was accepted")
+
+
+def test_proxy_round_robin_and_thresholds() -> None:
+    async def check() -> None:
+        manager = ProxySessionManager("static", static_entries=("a.example:8000:u1:p1", "b.example:8001:u2:p2"))
+        first = await manager.acquire()
+        second = await manager.acquire()
+        third = await manager.acquire()
+        assert first["server"] == "http://a.example:8000"
+        assert second["server"] == "http://b.example:8001"
+        assert third["server"] == first["server"]
+
+    asyncio.run(check())
+    monitor = ResourceMonitor(high=80, low=60)
+    assert monitor.high == 80 and monitor.low == 60
 
 
 def test_cancellation_contract() -> None:

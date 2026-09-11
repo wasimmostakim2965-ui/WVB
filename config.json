@@ -10,6 +10,7 @@
   "proxy_list": [],
   "visits_per_minute": "0",
   "test_marker": "WVB-internal-test",
+  "request_headers": [],
   "readiness_policy": "domcontentloaded",
   "readiness_selector": "",
   "scrolling_enabled": true,

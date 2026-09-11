@@ -8,11 +8,13 @@ import shutil
 import sys
 import tempfile
 import threading
+from datetime import datetime
 from pathlib import Path
 import tkinter as tk
 from tkinter import messagebox
 
 import customtkinter as ctk
+import psutil
 
 
 def _bootstrap_bundled_camoufox() -> None:
@@ -58,7 +60,9 @@ class App(ctk.CTk):
         self._save_after_id: str | None = None
         self._cards: dict[str, tuple[ctk.CTkProgressBar, ctk.CTkLabel, ctk.CTkButton]] = {}
         self._profiles: list[dict[str, object]] = []
+        self._request_headers: tuple[tuple[str, str], ...] = ()
         self._build_ui()
+        self._refresh_system_stats()
         self._load_config()
         self._loading = False
         self._save_config()
@@ -83,6 +87,8 @@ class App(ctk.CTk):
         header.grid(row=0, column=0, columnspan=2, padx=28, pady=(20, 10), sticky="ew")
         ctk.CTkLabel(header, text="WVB Performance Session Manager", font=ctk.CTkFont(size=24, weight="bold"), text_color="#14213D").pack(anchor="w")
         ctk.CTkLabel(header, text="Bounded Camoufox contexts · explicit internal test marker · resource-aware execution", text_color="#637083").pack(anchor="w", pady=(4, 0))
+        self._system_status = ctk.CTkLabel(header, text="CPU --% · RAM --% · Workers 0", text_color="#2563EB")
+        self._system_status.pack(anchor="w", pady=(6, 0))
 
         builder = ctk.CTkScrollableFrame(self, fg_color="#F7F9FC", border_width=1, border_color="#E1E7EF", corner_radius=12)
         builder.grid(row=1, column=0, padx=(28, 12), pady=8, sticky="nsew")
@@ -101,7 +107,7 @@ class App(ctk.CTk):
                 entry.configure(show="•")
         self._label(builder, "Proxy mode", 5)
         self._proxy_mode = tk.StringVar(value="none")
-        self._proxy_mode.trace_add("write", lambda *_: (self._schedule_save(), self._update_proxy_mode()))
+        self._proxy_mode.trace_add("write", self._on_proxy_mode_change)
         ctk.CTkComboBox(builder, values=["None", "Static Proxy", "Rotating Proxy"], variable=self._proxy_mode, height=32).grid(row=5, column=1, padx=18, pady=6, sticky="ew")
         self._label(builder, "Proxy host / gateway", 6)
         self._entry(builder, "proxy_server", 6, "")
@@ -113,6 +119,7 @@ class App(ctk.CTk):
         self._label(builder, "Static proxy list (host:port:user:pass)", 9)
         self._proxy_list = ctk.CTkTextbox(builder, height=90, border_width=1, border_color="#D6DEE8", fg_color="#FFFFFF", text_color="#1F2933")
         self._proxy_list.grid(row=9, column=1, padx=18, pady=6, sticky="ew")
+        self._proxy_list.bind("<KeyRelease>", lambda _event: self._schedule_save())
         self._label(builder, "Target rate / minute", 10)
         self._entry(builder, "visits_per_minute", 10, "0")
         self._label(builder, "Test marker", 11)
@@ -153,6 +160,28 @@ class App(ctk.CTk):
         self._status.grid(row=1, column=0, columnspan=2, pady=(7, 0), sticky="ew")
         self._list = ctk.CTkScrollableFrame(dashboard, fg_color="#F7F9FC", border_width=1, border_color="#E1E7EF")
         self._list.grid(row=1, column=0, padx=18, pady=(8, 18), sticky="nsew")
+        ctk.CTkLabel(dashboard, text="Live console", text_color="#14213D", anchor="w").grid(row=2, column=0, padx=18, pady=(4, 2), sticky="ew")
+        self._console = ctk.CTkTextbox(dashboard, height=120, state="disabled", fg_color="#111827", text_color="#D1FAE5")
+        self._console.grid(row=3, column=0, padx=18, pady=(2, 18), sticky="ew")
+        dashboard.grid_rowconfigure(3, weight=0)
+
+    def _refresh_system_stats(self) -> None:
+        try:
+            cpu = psutil.cpu_percent(interval=None)
+            ram = psutil.virtual_memory().percent
+            workers = len(self._manager.active_ids) if self._manager else 0
+            self._system_status.configure(text=f"CPU {cpu:.0f}% · RAM {ram:.0f}% · Workers {workers}")
+        except Exception:
+            self._system_status.configure(text="System metrics unavailable")
+        if not self._closing:
+            self.after(1000, self._refresh_system_stats)
+
+    def _console_log(self, message: str) -> None:
+        stamp = datetime.now().strftime("%H:%M:%S")
+        self._console.configure(state="normal")
+        self._console.insert("end", f"[{stamp}] {message}\n")
+        self._console.see("end")
+        self._console.configure(state="disabled")
 
     def _load_config(self) -> None:
         try:
@@ -174,13 +203,16 @@ class App(ctk.CTk):
         profiles = data.get("client_profiles", [])
         if isinstance(profiles, list):
             self._profiles = [profile for profile in profiles if isinstance(profile, dict)]
+        headers = data.get("request_headers", [])
+        if isinstance(headers, list):
+            self._request_headers = tuple((str(item[0]), str(item[1])) for item in headers if isinstance(item, list) and len(item) == 2)
 
     def _save_config(self, *_args) -> None:
         if self._loading:
             return
         try:
             data = {key: self._vars[key].get() for key in self._vars}
-            data.update({"scrolling_enabled": bool(self._scrolling.get()), "speed": self._speed.get(), "max_parallel": int(self._parallel.get() or 2), "readiness_policy": self._readiness.get(), "proxy_mode": self._proxy_mode.get().lower().replace(" proxy", ""), "proxy_list": self._proxy_list.get("1.0", "end-1c").splitlines(), "client_profiles": self._profiles})
+            data.update({"scrolling_enabled": bool(self._scrolling.get()), "speed": self._speed.get(), "max_parallel": int(self._parallel.get() or 2), "readiness_policy": self._readiness.get(), "proxy_mode": self._proxy_mode.get().lower().replace(" proxy", ""), "proxy_list": self._proxy_list.get("1.0", "end-1c").splitlines(), "client_profiles": self._profiles, "request_headers": [list(item) for item in self._request_headers]})
             fd, temp_name = tempfile.mkstemp(prefix="config.", suffix=".tmp", dir=ROOT)
             with os.fdopen(fd, "w", encoding="utf-8") as handle:
                 json.dump(data, handle, indent=2)
@@ -206,6 +238,10 @@ class App(ctk.CTk):
         static = mode.startswith("static")
         self._proxy_list.configure(state="normal" if static else "disabled")
 
+    def _on_proxy_mode_change(self, *_args) -> None:
+        self._schedule_save()
+        self._update_proxy_mode()
+
     def _proxy_values(self) -> tuple[str, tuple[str, ...]]:
         mode = self._proxy_mode.get().lower().replace(" proxy", "")
         entries = tuple(line.strip() for line in self._proxy_list.get("1.0", "end-1c").splitlines() if line.strip())
@@ -218,7 +254,7 @@ class App(ctk.CTk):
             scrolling_enabled=bool(self._scrolling.get()), speed=self._speed.get().lower(), proxy_server=self._vars["proxy_server"].get(), proxy_username=self._vars["proxy_username"].get(), proxy_password=self._vars["proxy_password"].get(),
             proxy_mode=proxy_mode, proxy_list=proxy_list,
             max_concurrent_visits=max(1, min(32, int(self._parallel.get() or 2))), visits_per_minute=float(self._vars["visits_per_minute"].get() or 0), readiness_policy=self._readiness.get(), readiness_selector=self._vars["readiness_selector"].get(), test_marker=self._vars["test_marker"].get(),
-            client_profiles=tuple(ClientProfile(str(p["name"]), int(p["width"]), int(p["height"]), str(p.get("locale", "en-US")), str(p.get("user_agent", ""))) for p in self._profiles), behavior=BehaviorConfig(scrolling_enabled=bool(self._scrolling.get())),
+            client_profiles=tuple(ClientProfile(str(p["name"]), int(p["width"]), int(p["height"]), str(p.get("locale", "en-US")), str(p.get("user_agent", ""))) for p in self._profiles), request_headers=self._request_headers, behavior=BehaviorConfig(scrolling_enabled=bool(self._scrolling.get())),
         )
         config.validate()
         return config
@@ -277,6 +313,10 @@ class App(ctk.CTk):
             label.grid(row=1, column=0, columnspan=2, padx=12, pady=2, sticky="ew")
             bar = ctk.CTkProgressBar(card, height=10, progress_color="#2563EB")
             bar.grid(row=2, column=0, columnspan=2, padx=12, pady=(6, 12), sticky="ew")
+            pause = ctk.CTkButton(card, text="PAUSE", width=72, height=28, command=lambda sid=session_id: self._pause_session(sid))
+            pause.grid(row=0, column=2, padx=(0, 10), pady=8)
+            resume = ctk.CTkButton(card, text="RESUME", width=72, height=28, command=lambda sid=session_id: self._resume_session(sid))
+            resume.grid(row=0, column=3, padx=(0, 10), pady=8)
             self._cards[session_id] = (bar, label, stop)
         bar, label, stop = self._cards[session_id]
         bar.set(done / total if total else 0)
@@ -284,10 +324,21 @@ class App(ctk.CTk):
         if message.startswith(("Complete", "Stopped", "Cancelled", "Error")):
             stop.configure(state="disabled")
         self._status.configure(text=f"Active URL session: {session_id} · {message}")
+        self._console_log(f"{session_id} · {message}")
 
     def _stop_session(self, session_id: str) -> None:
         if self._loop and self._manager:
             self._loop.call_soon_threadsafe(self._manager.stop, session_id)
+
+    def _pause_session(self, session_id: str) -> None:
+        if self._loop and self._manager:
+            self._loop.call_soon_threadsafe(self._manager.pause, session_id)
+            self._console_log(f"{session_id} · pause requested")
+
+    def _resume_session(self, session_id: str) -> None:
+        if self._loop and self._manager:
+            self._loop.call_soon_threadsafe(self._manager.resume, session_id)
+            self._console_log(f"{session_id} · resume requested")
 
     def _stop_all(self) -> None:
         if self._loop and self._manager:
@@ -303,6 +354,8 @@ class App(ctk.CTk):
             self._loop.call_soon_threadsafe(self._manager.stop_all)
         if self._worker and self._worker.is_alive() and threading.current_thread() is not self._worker:
             self._worker.join(timeout=15)
+            if self._worker.is_alive():
+                self._console_log("shutdown timeout: worker is still stopping")
         self.destroy()
 
 
