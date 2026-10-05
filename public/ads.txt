@@ -1,0 +1,4 @@
+# ads.txt — authorised digital sellers
+# Google AdSense: replace pub-XXXXXXXXXXXXXXXX with your own publisher ID.
+# This file helps prevent unauthorised parties from selling your ad inventory.
+google.com, pub-XXXXXXXXXXXXXXXX, DIRECT, f08c47fec0942fa0
