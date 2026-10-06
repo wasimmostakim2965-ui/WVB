@@ -57,7 +57,6 @@ export default function BackgroundRemover({ tool }: { tool: ToolMeta }) {
   return (
     <ToolShell
       tool={tool}
-      adSlot="background-remover"
     >
       <div className="grid gap-5 lg:grid-cols-2">
         <Panel title="Original image">

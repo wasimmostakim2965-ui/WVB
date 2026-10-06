@@ -95,7 +95,6 @@ export default function MyIp({ tool }: { tool: ToolMeta }) {
   return (
     <ToolShell
       tool={tool}
-      adSlot="my-ip"
     >
       <Panel
         title="Your public IP address"

@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { cn } from '@/lib/cn'
+import { useConsent } from '@/lib/consent'
 
 declare global {
   interface Window {
@@ -20,9 +21,9 @@ interface AdSlotProps {
 }
 
 /**
- * AdSense-ready placement. When a publisher id is configured the real ad unit is
- * rendered; otherwise a neutral, clearly labelled placeholder holds the space so
- * the layout never shifts once ads are enabled.
+ * AdSense-ready placement. It renders only when a publisher id and an ad unit id
+ * are configured *and* the visitor has accepted advertising cookies; otherwise it
+ * renders nothing, so the layout stays clean and no request is made before consent.
  */
 export function AdSlot({
   slot,
@@ -33,8 +34,9 @@ export function AdSlot({
   label = 'Advertisement',
 }: AdSlotProps) {
   const ref = useRef<HTMLModElement>(null)
+  const consent = useConsent()
   const client = typeof window !== 'undefined' ? window.__ADSENSE_CLIENT__ : undefined
-  const configured = Boolean(client && slot && !client.includes('XXXX'))
+  const configured = Boolean(client && slot && !client.includes('XXXX')) && consent === 'accepted'
 
   useEffect(() => {
     if (!configured) return
@@ -45,7 +47,7 @@ export function AdSlot({
     }
   }, [configured])
 
-  // Until a real publisher id is set, render nothing so the layout stays clean.
+  // Until ads are configured and consented to, render nothing.
   if (!configured) return null
 
   return (

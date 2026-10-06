@@ -172,7 +172,6 @@ export default function PdfTools({ tool }: { tool: ToolMeta }) {
   return (
     <ToolShell
       tool={tool}
-      adSlot="pdf-tools"
     >
       <div className="mb-5">
         <SegmentedControl<Mode>

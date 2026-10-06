@@ -1,24 +1,33 @@
 import { type ReactNode } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronRight } from 'lucide-react'
+import { Check, ChevronRight, ShieldCheck } from 'lucide-react'
 import { TOOLS, type ToolMeta } from '@/data/tools'
+import { getToolContent } from '@/data/toolContent'
 import { AdSlot } from '@/components/ui/AdSlot'
-import { useSeo, breadcrumbLd, softwareAppLd, SITE } from '@/lib/seo'
+import {
+  useSeo,
+  breadcrumbLd,
+  softwareAppLd,
+  faqLd,
+  toolMetaDescription,
+  toolTitle,
+  SITE,
+} from '@/lib/seo'
 
 interface ToolShellProps {
   tool: ToolMeta
   children: ReactNode
-  /** Slot id for the in-article ad unit. */
-  adSlot?: string
 }
 
-export function ToolShell({ tool, children, adSlot }: ToolShellProps) {
+export function ToolShell({ tool, children }: ToolShellProps) {
   const path = `/${tool.slug}`
-  const title = `${tool.name} — Free Online Tool | ${SITE.name}`
+  const content = getToolContent(tool.slug)
+  const title = toolTitle(tool.name)
+  const description = toolMetaDescription(tool.slug, tool.short, tool.keywords)
 
   useSeo({
     title,
-    description: tool.short,
+    description,
     path,
     keywords: tool.keywords,
     jsonLd: {
@@ -30,6 +39,7 @@ export function ToolShell({ tool, children, adSlot }: ToolShellProps) {
           { name: 'Tools', path: '/tools' },
           { name: tool.name, path },
         ]),
+        ...(content ? [faqLd(content.faq)] : []),
       ],
     },
   })
@@ -62,23 +72,77 @@ export function ToolShell({ tool, children, adSlot }: ToolShellProps) {
               <h1 className="font-display text-2xl font-extrabold tracking-tight text-ink sm:text-[32px]">
                 {tool.name}
               </h1>
-              <p className="mt-1.5 max-w-2xl text-[15px] leading-7 text-ink-mute">{tool.short}</p>
+              <p className="mt-1.5 max-w-2xl text-[15px] leading-7 text-ink-mute">
+                {content?.intro ?? tool.description}
+              </p>
             </div>
           </div>
           <span className="chip shrink-0 self-start">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent" />
-            Runs in your browser
+            <ShieldCheck className="h-3.5 w-3.5 text-accent" />
+            Private — runs in your browser
           </span>
         </header>
       </div>
 
-      <div className="shell mt-7">
-        <AdSlot slot={adSlot} minHeight={90} className="mb-7" />
-        {children}
+      {/* The tool itself, rendered and used entirely in the visitor's browser. */}
+      <div className="shell mt-7">{children}</div>
 
-        <AdSlot slot={adSlot} minHeight={250} className="mt-10" />
+      {content && (
+        <div className="shell mt-14 grid gap-10 lg:grid-cols-[minmax(0,1fr)_300px]">
+          <article className="prose-wvb max-w-none">
+            {content.sections.map((section) => (
+              <section key={section.heading}>
+                <h2>{section.heading}</h2>
+                <p>{section.body}</p>
+              </section>
+            ))}
 
-        <section className="mt-12">
+            <h2>Frequently asked questions</h2>
+            <dl className="not-prose mt-4 space-y-4">
+              {content.faq.map((item) => (
+                <div key={item.q} className="rounded-xl border border-surface-line bg-surface-muted/40 p-4">
+                  <dt className="font-display text-[15px] font-bold text-ink">{item.q}</dt>
+                  <dd className="mt-1.5 text-[14px] leading-6 text-ink-soft">{item.a}</dd>
+                </div>
+              ))}
+            </dl>
+
+            <p className="mt-8 text-[13px] text-ink-mute">
+              Page last reviewed {SITE.updated}. Spotted a mistake?{' '}
+              <Link to="/contact">Tell us</Link>.
+            </p>
+          </article>
+
+          <aside className="space-y-5">
+            <div className="card p-5">
+              <h2 className="font-display text-base font-bold text-ink">What you get</h2>
+              <ul className="mt-3 space-y-2.5">
+                {content.features.map((feature) => (
+                  <li key={feature} className="flex gap-2.5 text-[13px] leading-6 text-ink-soft">
+                    <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+                    <span>{feature}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="card bg-brand-50/60 p-5">
+              <h2 className="font-display text-base font-bold text-ink">Your privacy</h2>
+              <p className="mt-2 text-[13px] leading-6 text-ink-soft">
+                This tool runs on your device. Files and text you use here are not uploaded to us. See
+                our{' '}
+                <Link to="/privacy-policy" className="font-semibold text-brand-700 underline">
+                  Privacy Policy
+                </Link>
+                .
+              </p>
+            </div>
+            <AdSlot slot={tool.slug} minHeight={250} />
+          </aside>
+        </div>
+      )}
+
+      <div className="shell mt-14">
+        <section>
           <h2 className="font-display text-xl font-bold text-ink">Related tools</h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {related.map((t) => (
@@ -88,9 +152,7 @@ export function ToolShell({ tool, children, adSlot }: ToolShellProps) {
                 className="card group flex flex-col gap-2 p-4 transition hover:-translate-y-0.5 hover:border-brand-200 hover:shadow-lift"
               >
                 <t.icon className="h-5 w-5 text-brand-600" />
-                <span className="text-sm font-bold text-ink group-hover:text-brand-700">
-                  {t.name}
-                </span>
+                <span className="text-sm font-bold text-ink group-hover:text-brand-700">{t.name}</span>
                 <span className="text-xs leading-5 text-ink-mute">{t.short}</span>
               </Link>
             ))}

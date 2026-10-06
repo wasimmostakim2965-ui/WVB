@@ -173,7 +173,6 @@ export default function Stopwatch({ tool }: { tool: ToolMeta }) {
   return (
     <ToolShell
       tool={tool}
-      adSlot="stopwatch"
     >
       <div className="mb-5">
         <SegmentedControl<Mode>

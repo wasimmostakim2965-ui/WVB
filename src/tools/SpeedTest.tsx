@@ -159,7 +159,6 @@ export default function SpeedTest({ tool }: { tool: ToolMeta }) {
   return (
     <ToolShell
       tool={tool}
-      adSlot="speed-test"
     >
       <Panel title="Speed test">
         <div className="grid gap-6 lg:grid-cols-[300px_1fr] lg:items-center">

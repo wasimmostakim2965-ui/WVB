@@ -114,7 +114,6 @@ export default function ImageConverter({ tool }: { tool: ToolMeta }) {
   return (
     <ToolShell
       tool={tool}
-      adSlot="image-converter"
     >
       <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
         <Panel title="Upload images" description="JPG, PNG, WEBP, GIF, SVG, BMP or AVIF">

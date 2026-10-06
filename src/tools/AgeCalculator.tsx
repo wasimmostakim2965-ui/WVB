@@ -75,7 +75,6 @@ export default function AgeCalculator({ tool }: { tool: ToolMeta }) {
   return (
     <ToolShell
       tool={tool}
-      adSlot="age-calculator"
     >
       <div className="grid gap-5 lg:grid-cols-2">
         <Panel title="Age calculator">

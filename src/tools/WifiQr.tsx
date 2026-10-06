@@ -58,7 +58,6 @@ export default function WifiQr({ tool }: { tool: ToolMeta }) {
   return (
     <ToolShell
       tool={tool}
-      adSlot="wifi-qr"
     >
       <div className="grid gap-5 lg:grid-cols-2">
         <Panel title="Network details">

@@ -1,13 +1,26 @@
 import { Link } from 'react-router-dom'
-import { ArrowRight } from 'lucide-react'
+import { ArrowUpRight } from 'lucide-react'
 import type { ToolMeta } from '@/data/tools'
 import { cn } from '@/lib/cn'
 
-/**
- * The one card used everywhere a tool is listed: a bold gradient thumbnail with
- * the tool icon and name, the plain-language summary, and its category. The
- * gradient is derived from the slug so every tool keeps a stable colour.
- */
+const TINT_CLASSES = [
+  'from-blue-500 to-indigo-600',
+  'from-teal-500 to-emerald-600',
+  'from-violet-500 to-purple-600',
+  'from-orange-500 to-rose-600',
+  'from-sky-500 to-cyan-600',
+  'from-amber-500 to-orange-600',
+  'from-green-500 to-teal-600',
+  'from-pink-500 to-rose-600',
+]
+
+/** Stable per-slug tint so a tool keeps the same colour everywhere it appears. */
+export function tintIndex(slug: string) {
+  let h = 0
+  for (let i = 0; i < slug.length; i++) h = (h * 31 + slug.charCodeAt(i)) >>> 0
+  return h % TINT_CLASSES.length
+}
+
 export function ToolCard({
   tool,
   className,
@@ -22,35 +35,39 @@ export function ToolCard({
     <Link
       to={`/${tool.slug}`}
       className={cn(
-        'card group flex flex-col overflow-hidden transition duration-200 hover:-translate-y-1 hover:border-brand-200 hover:shadow-lift',
+        'card tool-tile group relative flex flex-col overflow-hidden p-0 transition duration-200 hover:-translate-y-1 hover:border-brand-200 hover:shadow-lift',
         className,
       )}
     >
-      <div className={cn('tool-tile relative grid h-32 place-items-center overflow-hidden', `tint-${tintIndex(tool.slug)}`)}>
-        <span aria-hidden className="tool-tile-glow" />
-        <Icon className="relative h-12 w-12 text-white drop-shadow" strokeWidth={1.8} />
-        <span className="absolute right-3 top-3 rounded-full bg-black/25 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white/90 backdrop-blur">
-          {tool.category.split(' ')[0]}
-        </span>
-      </div>
-      <div className="flex flex-1 flex-col gap-1.5 p-4">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="font-display text-[15px] font-bold leading-snug text-ink group-hover:text-brand-700">
-            {tool.name}
-          </h3>
+      <span
+        aria-hidden
+        className={cn(
+          'absolute inset-x-0 top-0 h-1 bg-gradient-to-r opacity-90',
+          TINT_CLASSES[tintIndex(tool.slug)],
+        )}
+      />
+      <div className="flex flex-1 flex-col p-4 pt-5">
+        <div className="flex items-start justify-between gap-3">
+          <span
+            className={cn(
+              'grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-to-br text-white shadow-sm',
+              TINT_CLASSES[tintIndex(tool.slug)],
+            )}
+          >
+            <Icon className="h-5 w-5" strokeWidth={2} />
+          </span>
           {showArrow && (
-            <ArrowRight className="mt-0.5 h-4 w-4 shrink-0 text-ink-mute opacity-0 transition group-hover:translate-x-0.5 group-hover:opacity-100" />
+            <ArrowUpRight className="h-4 w-4 shrink-0 text-ink-mute opacity-0 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100" />
           )}
         </div>
-        <p className="text-[13px] leading-6 text-ink-mute">{tool.short}</p>
+        <h3 className="mt-3.5 font-display text-[15px] font-bold leading-snug text-ink group-hover:text-brand-700">
+          {tool.name}
+        </h3>
+        <p className="mt-1.5 text-[13px] leading-6 text-ink-mute">{tool.short}</p>
+        <span className="mt-3 text-[11px] font-bold uppercase tracking-wider text-ink-mute/80">
+          {tool.category}
+        </span>
       </div>
     </Link>
   )
-}
-
-const TINTS = 8
-export function tintIndex(slug: string) {
-  let h = 0
-  for (let i = 0; i < slug.length; i++) h = (h * 31 + slug.charCodeAt(i)) >>> 0
-  return h % TINTS
 }

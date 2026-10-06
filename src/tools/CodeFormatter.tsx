@@ -104,7 +104,6 @@ export default function CodeFormatter({ tool }: { tool: ToolMeta }) {
   return (
     <ToolShell
       tool={tool}
-      adSlot="code-formatter"
     >
       <div className="mb-5 flex flex-wrap items-center gap-3">
         <SegmentedControl<Lang>

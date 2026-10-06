@@ -132,7 +132,6 @@ export default function ColorTools({ tool }: { tool: ToolMeta }) {
   return (
     <ToolShell
       tool={tool}
-      adSlot="color-tools"
     >
       <div className="mb-5">
         <SegmentedControl<Mode>

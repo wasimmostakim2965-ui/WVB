@@ -1,4 +1,4 @@
-import { StrictMode, useEffect, useState, type ReactNode } from 'react'
+import { StrictMode, useEffect, type ReactNode } from 'react'
 import ReactDOM from 'react-dom/client'
 import { BrowserRouter, useLocation } from 'react-router-dom'
 import App from './App'
@@ -14,31 +14,28 @@ function ScrollToTop() {
 }
 
 /**
- * Loads the AdSense tag only after the visitor consents to advertising cookies,
- * so no advertising cookies are set before consent.
+ * Keeps Google Consent Mode in step with the visitor's cookie choice. The tag in
+ * index.html starts every signal as "denied", so no advertising cookie is set
+ * until the visitor accepts; here we flip the signals to "granted" and back.
  */
-function AdSenseLoader() {
-  const [consent, setLocal] = useState(getConsent())
-
+function ConsentModeBridge() {
   useEffect(() => {
-    const onChange = () => setLocal(getConsent())
-    window.addEventListener('wvb-consent-change', onChange)
-    return () => window.removeEventListener('wvb-consent-change', onChange)
+    const apply = () => {
+      const granted = getConsent() === 'accepted'
+      const value = granted ? 'granted' : 'denied'
+      const w = window as unknown as { gtag?: (...args: unknown[]) => void }
+      if (typeof w.gtag !== 'function') return
+      w.gtag('consent', 'update', {
+        ad_storage: value,
+        ad_user_data: value,
+        ad_personalization: value,
+        analytics_storage: value,
+      })
+    }
+    apply()
+    window.addEventListener('wvb-consent-change', apply)
+    return () => window.removeEventListener('wvb-consent-change', apply)
   }, [])
-
-  useEffect(() => {
-    if (consent !== 'accepted') return
-    const client = window.__ADSENSE_CLIENT__
-    if (!client || client.includes('XXXX')) return
-    if (document.getElementById('adsbygoogle-js')) return
-    const s = document.createElement('script')
-    s.id = 'adsbygoogle-js'
-    s.async = true
-    s.crossOrigin = 'anonymous'
-    s.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${client}`
-    document.head.appendChild(s)
-  }, [consent])
-
   return null
 }
 
@@ -46,7 +43,7 @@ function Root({ children }: { children: ReactNode }) {
   return (
     <BrowserRouter>
       <ScrollToTop />
-      <AdSenseLoader />
+      <ConsentModeBridge />
       {children}
     </BrowserRouter>
   )

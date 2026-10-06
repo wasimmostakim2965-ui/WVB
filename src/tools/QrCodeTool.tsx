@@ -165,7 +165,6 @@ export default function QrCodeTool({ tool }: { tool: ToolMeta }) {
   return (
     <ToolShell
       tool={tool}
-      adSlot="qr-code"
     >
       <div className="mb-5">
         <SegmentedControl<Mode>

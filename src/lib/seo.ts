@@ -1,11 +1,17 @@
 import { useEffect } from 'react'
+import { SITE, type SeoOptions } from './seoData'
 
-export const SITE = {
-  name: 'WVB Tools',
-  domain: 'https://wvbtools.com',
-  tagline: '19 free online tools that run in your browser',
-  twitter: '@wvbtools',
-}
+export {
+  SITE,
+  breadcrumbLd,
+  softwareAppLd,
+  faqLd,
+  toolPath,
+  toolTitle,
+  toolMetaDescription,
+  DEFAULT_TITLE,
+  type SeoOptions,
+} from './seoData'
 
 function upsertMeta(attr: 'name' | 'property', key: string, content: string) {
   let el = document.head.querySelector<HTMLMetaElement>(`meta[${attr}="${key}"]`)
@@ -27,15 +33,11 @@ function upsertLink(rel: string, href: string) {
   el.setAttribute('href', href)
 }
 
-export interface SeoOptions {
-  title: string
-  description: string
-  path: string
-  keywords?: string[]
-  type?: 'website' | 'article'
-  jsonLd?: Record<string, unknown> | null
-}
-
+/**
+ * Keeps the document head in sync with the current route: title, description,
+ * canonical, social tags and structured data. The same values are written into
+ * the static HTML at build time, so crawlers see them without running scripts.
+ */
 export function useSeo({ title, description, path, keywords, type = 'website', jsonLd }: SeoOptions) {
   useEffect(() => {
     const url = `${SITE.domain}${path}`
@@ -57,6 +59,10 @@ export function useSeo({ title, description, path, keywords, type = 'website', j
 
     upsertLink('canonical', url)
 
+    // Replace any structured data already in the document (including the block
+    // prerendered into the static HTML) so exactly one graph is present.
+    document.head.querySelectorAll('script[type="application/ld+json"]').forEach((el) => el.remove())
+
     let script: HTMLScriptElement | null = null
     if (jsonLd) {
       script = document.createElement('script')
@@ -69,30 +75,4 @@ export function useSeo({ title, description, path, keywords, type = 'website', j
       if (script) script.remove()
     }
   }, [title, description, path, keywords, type, jsonLd])
-}
-
-export function breadcrumbLd(items: { name: string; path: string }[]) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: items.map((item, i) => ({
-      '@type': 'ListItem',
-      position: i + 1,
-      name: item.name,
-      item: `${SITE.domain}${item.path}`,
-    })),
-  }
-}
-
-export function softwareAppLd(name: string, description: string, path: string) {
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'SoftwareApplication',
-    name,
-    description,
-    url: `${SITE.domain}${path}`,
-    applicationCategory: 'UtilitiesApplication',
-    operatingSystem: 'Any (web browser)',
-    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-  }
 }

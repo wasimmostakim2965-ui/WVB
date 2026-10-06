@@ -58,7 +58,6 @@ export default function BmiCalculator({ tool }: { tool: ToolMeta }) {
   return (
     <ToolShell
       tool={tool}
-      adSlot="bmi-calculator"
     >
       <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
         <Panel title="Your measurements">

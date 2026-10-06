@@ -1,8 +1,29 @@
 import { useState, type FormEvent } from 'react'
+import { Link } from 'react-router-dom'
 import { Mail, MessageSquare, ShieldCheck } from 'lucide-react'
 import { useSeo, SITE } from '@/lib/seo'
 import { AdSlot } from '@/components/ui/AdSlot'
+import { AD_UNITS } from '@/lib/ads'
 import { Labeled, Notice, Panel, TextArea, TextInput } from '@/components/ui/Primitives'
+
+const FAQS = [
+  {
+    q: 'How quickly will I get a reply?',
+    a: 'We are a small team and read every message. Most enquiries get a reply within a few working days.',
+  },
+  {
+    q: 'A tool is not working for me. What should I include?',
+    a: 'Tell us which tool, which browser and device you are using, and what you expected to happen. A screenshot helps a great deal.',
+  },
+  {
+    q: 'Can I request a new tool?',
+    a: 'Yes, and we welcome it. Describe what you need the tool to do and how you would use it, and we will consider it for a future update.',
+  },
+  {
+    q: 'Do you offer advertising or sponsorship?',
+    a: 'For business and advertising enquiries, write to hello@wvbtools.com with a short description of your proposal.',
+  },
+]
 
 export default function Contact() {
   const [sent, setSent] = useState(false)
@@ -98,7 +119,28 @@ export default function Contact() {
           </form>
         </Panel>
 
-        <AdSlot slot="contact-bottom" minHeight={250} className="mt-12" />
+        <section className="mt-10">
+          <h2 className="font-display text-xl font-bold text-ink">Frequently asked questions</h2>
+          <dl className="mt-4 space-y-4">
+            {FAQS.map((item) => (
+              <div key={item.q} className="rounded-xl border border-surface-line bg-surface-muted/40 p-4">
+                <dt className="font-display text-[15px] font-bold text-ink">{item.q}</dt>
+                <dd className="mt-1.5 text-[14px] leading-6 text-ink-soft">{item.a}</dd>
+              </div>
+            ))}
+          </dl>
+        </section>
+
+        <p className="mt-8 text-[13px] leading-6 text-ink-mute">
+          We read every message, but we are a small team, so please allow a few days for a reply. For
+          details on how we handle the information you send us, see our{' '}
+          <Link to="/privacy-policy" className="font-semibold text-brand-700 underline">
+            Privacy Policy
+          </Link>
+          .
+        </p>
+
+        <AdSlot slot={AD_UNITS.legalBottom} minHeight={250} className="mt-12" />
       </div>
     </div>
   )

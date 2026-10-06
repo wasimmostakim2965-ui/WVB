@@ -80,7 +80,6 @@ export default function TextToSpeech({ tool }: { tool: ToolMeta }) {
   return (
     <ToolShell
       tool={tool}
-      adSlot="text-to-speech"
     >
       {!supported && (
         <Notice tone="warn" className="mb-5">

@@ -100,38 +100,10 @@
     @apply font-semibold text-ink;
   }
 
-  /* Visual tool thumbnails. Each tool keeps a stable gradient from its slug. */
+  /* A tool card: a thin coloured top rule plus a gradient icon tile. Both colours
+     come from the slug-derived tint utility classes so a tool keeps one identity. */
   .tool-tile {
-    background-image: linear-gradient(135deg, #1f3fe0, #5b84fb);
-  }
-  .tool-tile-glow {
-    position: absolute;
-    inset: -40%;
-    background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.28), transparent 55%);
-  }
-  .tint-0 {
-    background-image: linear-gradient(135deg, #1f3fe0, #5b84fb);
-  }
-  .tint-1 {
-    background-image: linear-gradient(135deg, #0f766e, #2dd4bf);
-  }
-  .tint-2 {
-    background-image: linear-gradient(135deg, #6d28d9, #a78bfa);
-  }
-  .tint-3 {
-    background-image: linear-gradient(135deg, #b91c1c, #f97316);
-  }
-  .tint-4 {
-    background-image: linear-gradient(135deg, #0e7490, #38bdf8);
-  }
-  .tint-5 {
-    background-image: linear-gradient(135deg, #a16207, #f59e0b);
-  }
-  .tint-6 {
-    background-image: linear-gradient(135deg, #15803d, #4ade80);
-  }
-  .tint-7 {
-    background-image: linear-gradient(135deg, #be185d, #fb7185);
+    position: relative;
   }
 }
 

@@ -76,7 +76,6 @@ export default function WordCounter({ tool }: { tool: ToolMeta }) {
   return (
     <ToolShell
       tool={tool}
-      adSlot="word-counter"
     >
       <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
         <Panel

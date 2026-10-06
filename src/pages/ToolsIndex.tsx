@@ -1,14 +1,22 @@
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Search } from 'lucide-react'
 import { CATEGORIES, TOOLS, type Category } from '@/data/tools'
 import { useSeo, SITE, breadcrumbLd } from '@/lib/seo'
 import { cn } from '@/lib/cn'
 import { AdSlot } from '@/components/ui/AdSlot'
+import { AD_UNITS } from '@/lib/ads'
 import { ToolCard } from '@/components/ui/ToolCard'
 
 export default function ToolsIndex() {
-  const [query, setQuery] = useState('')
+  const [params, setParams] = useSearchParams()
+  const [query, setQuery] = useState(params.get('q') ?? '')
   const [active, setActive] = useState<Category | 'All'>('All')
+
+  // Keep the search box in sync when arriving from a search link (e.g. ?q=pdf).
+  useEffect(() => {
+    setQuery(params.get('q') ?? '')
+  }, [params])
 
   useSeo({
     title: `All Tools — Free Online Utilities | ${SITE.name}`,
@@ -63,7 +71,11 @@ export default function ToolsIndex() {
           <input
             type="search"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(e) => {
+              const value = e.target.value
+              setQuery(value)
+              setParams(value ? { q: value } : {}, { replace: true })
+            }}
             placeholder="Search tools…"
             aria-label="Search tools"
             className="field pl-10"
@@ -88,7 +100,7 @@ export default function ToolsIndex() {
         </div>
       </div>
 
-      <AdSlot slot="tools-top" minHeight={90} className="mt-8" />
+      <AdSlot slot={AD_UNITS.toolsTop} minHeight={90} className="mt-8" />
 
       {filtered.length === 0 ? (
         <p className="mt-12 text-center text-sm text-ink-mute">

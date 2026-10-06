@@ -21,26 +21,40 @@
     />
     <meta name="robots" content="index, follow, max-image-preview:large" />
     <link rel="canonical" href="https://wvbtools.com/" />
+    <!--seo-->
 
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="WVB Tools" />
-    <meta property="og:title" content="WVB Tools — 19 Free Online Tools" />
-    <meta
-      property="og:description"
-      content="Free, fast, private online tools that run in your browser. No sign-up, no upload."
-    />
-    <meta property="og:url" content="https://wvbtools.com/" />
-    <meta name="twitter:card" content="summary_large_image" />
-
-    <!-- Google AdSense publisher id. Set this to your real ca-pub-… id (and update
-         public/ads.txt). The ad script is only loaded after a visitor accepts
-         advertising cookies. -->
+    <!-- Google AdSense.
+         Replace ca-pub-XXXXXXXXXXXXXXXX with your real publisher id in the three
+         places below and in public/ads.txt. The meta tag lets Google verify that
+         you own the site; the script is what serves the ads. Consent Mode starts
+         every signal as "denied" so no advertising cookie is set until the visitor
+         accepts, at which point the app updates the signals to "granted". -->
+    <meta name="google-adsense-account" content="ca-pub-XXXXXXXXXXXXXXXX" />
     <script>
       window.__ADSENSE_CLIENT__ = 'ca-pub-XXXXXXXXXXXXXXXX'
+      window.dataLayer = window.dataLayer || []
+      function gtag() {
+        dataLayer.push(arguments)
+      }
+      gtag('consent', 'default', {
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+        analytics_storage: 'denied',
+        wait_for_update: 500,
+      })
     </script>
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+      crossorigin="anonymous"
+    ></script>
   </head>
   <body>
     <div id="root"></div>
+    <noscript>
+      <!--noscript-->
+    </noscript>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

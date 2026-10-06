@@ -154,7 +154,6 @@ export default function ImageResizer({ tool }: { tool: ToolMeta }) {
   return (
     <ToolShell
       tool={tool}
-      adSlot="image-resizer"
     >
       {!src ? (
         <Panel title="Choose an image">

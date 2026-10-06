@@ -190,7 +190,6 @@ export default function UnitConverter({ tool }: { tool: ToolMeta }) {
   return (
     <ToolShell
       tool={tool}
-      adSlot="unit-converter"
     >
       <div className="mb-5 flex flex-wrap gap-2">
         {(

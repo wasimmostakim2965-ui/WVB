@@ -167,7 +167,6 @@ export default function PasswordGenerator({ tool }: { tool: ToolMeta }) {
   return (
     <ToolShell
       tool={tool}
-      adSlot="password-generator"
     >
       <div className="mb-5">
         <SegmentedControl

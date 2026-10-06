@@ -48,7 +48,6 @@ export default function LoanCalculator({ tool }: { tool: ToolMeta }) {
   return (
     <ToolShell
       tool={tool}
-      adSlot="loan-calculator"
     >
       <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
         <Panel title="Loan details">

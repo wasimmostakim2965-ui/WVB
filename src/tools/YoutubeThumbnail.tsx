@@ -73,7 +73,6 @@ export default function YoutubeThumbnail({ tool }: { tool: ToolMeta }) {
   return (
     <ToolShell
       tool={tool}
-      adSlot="youtube-thumbnail"
     >
       <Panel title="Video link">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
