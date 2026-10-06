@@ -34,45 +34,35 @@ export function AdSlot({
 }: AdSlotProps) {
   const ref = useRef<HTMLModElement>(null)
   const client = typeof window !== 'undefined' ? window.__ADSENSE_CLIENT__ : undefined
-  const active = Boolean(client && slot)
+  const configured = Boolean(client && slot && !client.includes('XXXX'))
 
   useEffect(() => {
-    if (!active) return
+    if (!configured) return
     try {
       ;(window.adsbygoogle = window.adsbygoogle || []).push({})
     } catch {
-      /* ad blocker or script not loaded */
+      /* ad blocker or script not loaded yet */
     }
-  }, [active])
+  }, [configured])
+
+  // Until a real publisher id is set, render nothing so the layout stays clean.
+  if (!configured) return null
 
   return (
-    <aside
-      aria-label={label}
-      className={cn('w-full', className)}
-      data-ad-slot={slot ?? 'placeholder'}
-    >
+    <aside aria-label={label} className={cn('w-full', className)} data-ad-slot={slot}>
       <div className="mb-1.5 text-center text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-mute/60">
         {label}
       </div>
-      {active ? (
-        <ins
-          ref={ref}
-          className="adsbygoogle block"
-          style={{ display: 'block', minHeight }}
-          data-ad-client={client}
-          data-ad-slot={slot}
-          data-ad-format={format}
-          data-ad-layout={layout}
-          data-full-width-responsive="true"
-        />
-      ) : (
-        <div
-          className="flex items-center justify-center rounded-xl border border-dashed border-surface-line bg-surface-muted/60 text-xs font-medium text-ink-mute/70"
-          style={{ minHeight }}
-        >
-          Ad space
-        </div>
-      )}
+      <ins
+        ref={ref}
+        className="adsbygoogle block"
+        style={{ display: 'block', minHeight }}
+        data-ad-client={client}
+        data-ad-slot={slot}
+        data-ad-format={format}
+        data-ad-layout={layout}
+        data-full-width-responsive="true"
+      />
     </aside>
   )
 }

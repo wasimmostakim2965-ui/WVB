@@ -5,36 +5,16 @@ import { TOOLS, type ToolMeta } from '@/data/tools'
 import { AdSlot } from '@/components/ui/AdSlot'
 import { useSeo, breadcrumbLd, softwareAppLd, SITE } from '@/lib/seo'
 
-interface FaqItem {
-  q: string
-  a: string
-}
-
 interface ToolShellProps {
   tool: ToolMeta
   children: ReactNode
-  /** Long-form content shown under the tool, keeps pages content-rich for AdSense. */
-  content: ReactNode
-  faqs?: FaqItem[]
   /** Slot id for the in-article ad unit. */
   adSlot?: string
 }
 
-export function ToolShell({ tool, children, content, faqs, adSlot }: ToolShellProps) {
+export function ToolShell({ tool, children, adSlot }: ToolShellProps) {
   const path = `/${tool.slug}`
   const title = `${tool.name} — Free Online Tool | ${SITE.name}`
-  const faqLd =
-    faqs && faqs.length
-      ? {
-          '@context': 'https://schema.org',
-          '@type': 'FAQPage',
-          mainEntity: faqs.map((f) => ({
-            '@type': 'Question',
-            name: f.q,
-            acceptedAnswer: { '@type': 'Answer', text: f.a },
-          })),
-        }
-      : null
 
   useSeo({
     title,
@@ -50,7 +30,6 @@ export function ToolShell({ tool, children, content, faqs, adSlot }: ToolShellPr
           { name: 'Tools', path: '/tools' },
           { name: tool.name, path },
         ]),
-        ...(faqLd ? [faqLd] : []),
       ],
     },
   })
@@ -98,25 +77,6 @@ export function ToolShell({ tool, children, content, faqs, adSlot }: ToolShellPr
         {children}
 
         <AdSlot slot={adSlot} minHeight={250} className="mt-10" />
-
-        <section className="prose-wvb mt-12 max-w-3xl">{content}</section>
-
-        {faqs && faqs.length > 0 && (
-          <section className="mt-12 max-w-3xl">
-            <h2 className="font-display text-xl font-bold text-ink">Frequently asked questions</h2>
-            <div className="mt-4 divide-y divide-surface-line rounded-2xl border border-surface-line">
-              {faqs.map((f) => (
-                <details key={f.q} className="group px-5 py-4">
-                  <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-semibold text-ink">
-                    {f.q}
-                    <ChevronRight className="h-4 w-4 shrink-0 text-ink-mute transition group-open:rotate-90" />
-                  </summary>
-                  <p className="mt-2.5 text-sm leading-6 text-ink-mute">{f.a}</p>
-                </details>
-              ))}
-            </div>
-          </section>
-        )}
 
         <section className="mt-12">
           <h2 className="font-display text-xl font-bold text-ink">Related tools</h2>

@@ -166,41 +166,6 @@ export default function QrCodeTool({ tool }: { tool: ToolMeta }) {
     <ToolShell
       tool={tool}
       adSlot="qr-code"
-      content={
-        <>
-          <h2>Create and scan QR codes</h2>
-          <p>
-            In <strong>Create</strong> mode, choose what the code should do — open a link, start an
-            email, dial a number, send a text message, join WiFi or simply show text — then fill in
-            the fields. Customise the colours and size and add a logo in the centre.
-          </p>
-          <p>
-            In <strong>Scan</strong> mode you can read a QR code with your camera or from a picture
-            on your device. Both modes run entirely in your browser.
-          </p>
-          <h2>Tips for a reliable code</h2>
-          <ul>
-            <li>Keep good contrast: a dark pattern on a light background scans best.</li>
-            <li>Avoid inverting the colours, as some older scanners cannot read white-on-black codes.</li>
-            <li>If you add a logo, keep it small; the tool uses high error correction to stay scannable.</li>
-            <li>Test the code with your own phone before printing it in large quantities.</li>
-          </ul>
-        </>
-      }
-      faqs={[
-        {
-          q: 'Do the QR codes expire?',
-          a: 'No. The code contains your data directly and is generated in your browser, so it keeps working forever with no server involved.',
-        },
-        {
-          q: 'Can I add my logo to the centre?',
-          a: 'Yes. Upload a square logo image and it is drawn in the middle of the code using high error correction so it remains readable.',
-        },
-        {
-          q: 'Can I scan a QR code from a screenshot?',
-          a: 'Yes. In Scan mode, upload the image file and the tool reads the code from the picture.',
-        },
-      ]}
     >
       <div className="mb-5">
         <SegmentedControl<Mode>

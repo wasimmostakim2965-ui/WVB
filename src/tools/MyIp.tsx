@@ -96,50 +96,6 @@ export default function MyIp({ tool }: { tool: ToolMeta }) {
     <ToolShell
       tool={tool}
       adSlot="my-ip"
-      content={
-        <>
-          <h2>What is my IP address?</h2>
-          <p>
-            Your IP address is the public number that websites see when you connect to the internet.
-            This page shows yours in large text the moment it loads, together with the provider,
-            approximate location and connection details behind it.
-          </p>
-          <h2>What the information means</h2>
-          <ul>
-            <li><strong>IP address</strong> — your public IPv4 or IPv6 address as seen by the internet.</li>
-            <li><strong>ISP</strong> — the company that provides your connection.</li>
-            <li><strong>Location</strong> — the approximate city and country tied to your address, not your exact position.</li>
-            <li><strong>Timezone and ASN</strong> — the network block your address belongs to.</li>
-          </ul>
-          <h2>VPN and proxy detection</h2>
-          <p>
-            We compare your provider against known hosting and data-centre networks. Traffic that
-            originates from a cloud provider is a strong hint that a VPN or proxy is in use, though
-            it is not proof. Some legitimate connections, such as office networks, also run through
-            data centres.
-          </p>
-          <h2>Is this information private?</h2>
-          <p>
-            Every website you visit can see your public IP address; it is part of how the internet
-            works. We send one request to a public IP lookup service to display it here, and we do
-            not store it.
-          </p>
-        </>
-      }
-      faqs={[
-        {
-          q: 'Does this page show my exact location?',
-          a: 'No. IP-based location is approximate and usually points to your city or region, not your street or home address.',
-        },
-        {
-          q: 'Can this tool tell if I am using a VPN?',
-          a: 'It can flag connections that come from hosting or data-centre networks, which is a common sign of a VPN or proxy. It cannot detect every VPN with certainty.',
-        },
-        {
-          q: 'Why is my IP address different from what my provider told me?',
-          a: 'Providers use shared pools of addresses, so the address you see can change between sessions or be shared with other customers (carrier-grade NAT).',
-        },
-      ]}
     >
       <Panel
         title="Your public IP address"

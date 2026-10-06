@@ -10,7 +10,7 @@ type Lang = 'json' | 'js' | 'css' | 'html'
 type Action = 'beautify' | 'minify'
 
 const SAMPLE: Record<Lang, string> = {
-  json: '{"name":"WVB Tools","tools":20,"tags":["fast","private"],"nested":{"a":1,"b":[2,3]}}',
+  json: '{"name":"WVB Tools","tools":19,"tags":["fast","private"],"nested":{"a":1,"b":[2,3]}}',
   js: 'function greet(name){const msg="Hello, "+name+"!";if(name){console.log(msg)}else{console.log("Hi!")}return msg}',
   css: 'body{margin:0;padding:0;font-family:sans-serif;color:#111}.btn{display:inline-flex;gap:8px;padding:10px 16px;border-radius:12px;background:#345ef5;color:#fff}',
   html: '<div class="card"><h1>Hello</h1><p>Some text here</p><ul><li>One</li><li>Two</li></ul></div>',
@@ -105,43 +105,6 @@ export default function CodeFormatter({ tool }: { tool: ToolMeta }) {
     <ToolShell
       tool={tool}
       adSlot="code-formatter"
-      content={
-        <>
-          <h2>Format, beautify and minify code</h2>
-          <p>
-            Choose a language — JSON, JavaScript, CSS or HTML — paste your code and press the action
-            button. <strong>Beautify</strong> adds indentation and line breaks to make code readable.{' '}
-            <strong>Minify</strong> removes everything unnecessary to make the file as small as
-            possible for a live website.
-          </p>
-          <h2>When to use each one</h2>
-          <ul>
-            <li><strong>Beautify</strong> when you receive compressed code and need to read or edit it.</li>
-            <li><strong>Minify</strong> before publishing, to reduce download size and speed up a page.</li>
-            <li><strong>Validate JSON</strong> by beautifying it: invalid JSON shows an error with the position.</li>
-          </ul>
-          <h2>Is my code uploaded?</h2>
-          <p>
-            No. Formatting and minifying happen entirely in your browser. That matters if your code
-            contains keys, internal URLs or anything you would rather not send to a stranger's
-            server.
-          </p>
-        </>
-      }
-      faqs={[
-        {
-          q: 'Can this tool find errors in my JSON?',
-          a: 'Yes. If the JSON is invalid, beautifying it reports the problem so you can fix it. Valid JSON is reformatted with proper indentation.',
-        },
-        {
-          q: 'Is my code sent to a server?',
-          a: 'No. Everything runs locally in your browser, so your code and any secrets in it never leave your device.',
-        },
-        {
-          q: 'Will minifying break my JavaScript?',
-          a: 'Minification renames local variables and removes whitespace, which is safe for standard code. Code that relies on function names via reflection can behave differently, so always test the minified output.',
-        },
-      ]}
     >
       <div className="mb-5 flex flex-wrap items-center gap-3">
         <SegmentedControl<Lang>

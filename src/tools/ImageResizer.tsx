@@ -155,42 +155,6 @@ export default function ImageResizer({ tool }: { tool: ToolMeta }) {
     <ToolShell
       tool={tool}
       adSlot="image-resizer"
-      content={
-        <>
-          <h2>Resize, crop and compress images</h2>
-          <p>
-            This tool does three jobs in one place. Choose <strong>Resize</strong> to set exact pixel
-            dimensions, <strong>Crop</strong> to trim the edges, or <strong>Compress</strong> to
-            shrink the file size while keeping the original dimensions.
-          </p>
-          <h2>Resizing without losing quality</h2>
-          <p>
-            When you enlarge or shrink an image the browser re-samples the pixels using high-quality
-            smoothing. For the sharpest results, downscale from a larger original rather than
-            upscaling a small one.
-          </p>
-          <h2>Getting the smallest file</h2>
-          <p>
-            To reduce file size quickly, choose <strong>WEBP</strong> and lower the quality slider.
-            WEBP usually produces files 25–40% smaller than JPG at the same visual quality. Use PNG
-            only when you need transparency or lossless output.
-          </p>
-        </>
-      }
-      faqs={[
-        {
-          q: 'Does this tool upload my image?',
-          a: 'No. Resizing, cropping and compression all happen in your browser using the canvas API. Your image is never sent to a server.',
-        },
-        {
-          q: 'How do I reduce an image to a specific file size?',
-          a: 'Choose WEBP or JPG, then lower the quality slider until the output size shown next to the result matches what you need.',
-        },
-        {
-          q: 'Can I keep the aspect ratio?',
-          a: 'Yes. Leave "Keep aspect ratio" switched on and typing a width automatically sets the matching height.',
-        },
-      ]}
     >
       {!src ? (
         <Panel title="Choose an image">

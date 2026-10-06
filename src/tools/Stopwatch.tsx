@@ -174,42 +174,6 @@ export default function Stopwatch({ tool }: { tool: ToolMeta }) {
     <ToolShell
       tool={tool}
       adSlot="stopwatch"
-      content={
-        <>
-          <h2>Stopwatch, countdown timer and world clock</h2>
-          <p>
-            Three time tools in one place. Use the <strong>Stopwatch</strong> to time an activity
-            with lap splits, the <strong>Timer</strong> to count down to zero with an audible alert,
-            and the <strong>World clock</strong> to see the time in major cities at a glance.
-          </p>
-          <h2>Timing accurately</h2>
-          <p>
-            The stopwatch is based on your device's high-resolution clock rather than a simple
-            counter, so it stays accurate over long sessions and keeps running smoothly while you use
-            other tabs. Lap times are recorded to the hundredth of a second.
-          </p>
-          <h2>Uses for each tool</h2>
-          <ul>
-            <li><strong>Stopwatch</strong> — workouts, cooking, presentations, study sessions, interval training.</li>
-            <li><strong>Timer</strong> — pomodoro sessions, reminders, timed tests, brewing coffee.</li>
-            <li><strong>World clock</strong> — scheduling calls across time zones or checking what time it is for a friend abroad.</li>
-          </ul>
-        </>
-      }
-      faqs={[
-        {
-          q: 'Does the timer still work if I switch tabs?',
-          a: 'Yes. The timer runs on a background interval and keeps counting, and the alert plays when it reaches zero as long as the tab stays open.',
-        },
-        {
-          q: 'How accurate is the stopwatch?',
-          a: 'It uses your device\'s high-resolution timer and displays hundredths of a second, which is more than accurate enough for everyday use.',
-        },
-        {
-          q: 'Why do some world clock cities show a different day?',
-          a: 'Time zones can differ by a full day. The offset shown next to each city tells you how far ahead or behind it is from your own local time.',
-        },
-      ]}
     >
       <div className="mb-5">
         <SegmentedControl<Mode>

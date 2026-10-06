@@ -76,41 +76,6 @@ export default function AgeCalculator({ tool }: { tool: ToolMeta }) {
     <ToolShell
       tool={tool}
       adSlot="age-calculator"
-      content={
-        <>
-          <h2>Find your exact age</h2>
-          <p>
-            Choose your date of birth and the date to compare against — today by default — and the
-            tool shows your age in years, months and days, plus the total in weeks, days, hours and
-            minutes. It also counts down to your next birthday, live.
-          </p>
-          <h2>Why the months and days are not simple subtraction</h2>
-          <p>
-            Calendar months have different lengths, so a reliable age calculation borrows days from
-            the previous month when needed. That is why the tool can report, for example, 24 years, 3
-            months and 18 days rather than rounding to a whole number.
-          </p>
-          <h2>Measuring between two dates</h2>
-          <p>
-            The second section measures the difference between any two dates. This is useful for
-            counting project durations, days until an event or the length of a trip.
-          </p>
-        </>
-      }
-      faqs={[
-        {
-          q: 'How is age calculated exactly?',
-          a: 'The tool counts complete years, then complete months, then remaining days, borrowing from the previous month when a month is shorter. This matches how age is normally stated.',
-        },
-        {
-          q: 'Does it handle leap years?',
-          a: 'Yes. Leap days are included automatically because the calculation works from real calendar dates.',
-        },
-        {
-          q: 'Can I calculate the age on a past or future date?',
-          a: 'Yes. Change the "age at date" field to any date and the result updates instantly.',
-        },
-      ]}
     >
       <div className="grid gap-5 lg:grid-cols-2">
         <Panel title="Age calculator">

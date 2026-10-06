@@ -1,7 +1,7 @@
 {
   "name": "WVB Tools — Free Online Tools",
   "short_name": "WVB Tools",
-  "description": "20 free, private online tools for images, PDFs, text, network checks and calculations.",
+  "description": "19 free, private online tools for images, PDFs, text, network checks and calculations.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",

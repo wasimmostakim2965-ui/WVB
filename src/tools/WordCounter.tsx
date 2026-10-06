@@ -77,46 +77,6 @@ export default function WordCounter({ tool }: { tool: ToolMeta }) {
     <ToolShell
       tool={tool}
       adSlot="word-counter"
-      content={
-        <>
-          <h2>Count words, characters and reading time</h2>
-          <p>
-            Type or paste your text into the box and the counts update as you write. You will see
-            words, characters (with and without spaces), sentences, paragraphs, unique words and an
-            estimate of how long the text takes to read or speak aloud.
-          </p>
-          <h2>Convert letter case in one click</h2>
-          <p>
-            Use the buttons to switch the whole text to UPPERCASE, lowercase, Title Case or Sentence
-            case, or to convert it into camelCase, snake_case or kebab-case for use in code.
-          </p>
-          <h2>Why reading time matters</h2>
-          <p>
-            Our estimate assumes an average adult reading speed of about 225 words per minute, and a
-            speaking speed of about 130 words per minute. Blog posts, newsletters and scripts all
-            benefit from knowing how long they will take.
-          </p>
-          <h2>Keyword density</h2>
-          <p>
-            The keyword list shows which words appear most often, which helps you check that a page
-            stays on topic without repeating a term too heavily.
-          </p>
-        </>
-      }
-      faqs={[
-        {
-          q: 'How is reading time calculated?',
-          a: 'We divide the word count by 225 words per minute, a common average for adult readers. Speaking time uses a slower rate of about 130 words per minute.',
-        },
-        {
-          q: 'Is my text uploaded anywhere?',
-          a: 'No. Counting and case conversion happen entirely in your browser, so your text stays private.',
-        },
-        {
-          q: 'Can I paste text from a file?',
-          a: 'Yes. Use the upload button to load a .txt file, or paste text directly into the box with Ctrl+V.',
-        },
-      ]}
     >
       <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
         <Panel

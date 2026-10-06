@@ -15,7 +15,6 @@ import {
   Scissors,
   Timer,
   Type,
-  Video,
   Volume2,
   Wifi,
   Youtube,
@@ -40,6 +39,8 @@ export interface ToolMeta {
   category: Category
   icon: LucideIcon
   keywords: string[]
+  /** Shown first, in the "Popular tools" row. */
+  popular?: boolean
 }
 
 export const CATEGORIES: Category[] = [
@@ -53,7 +54,22 @@ export const CATEGORIES: Category[] = [
   'Time & Utilities',
 ]
 
+/**
+ * Order matters: this array drives the homepage grid and the header menu, so the
+ * most requested tools are listed first.
+ */
 export const TOOLS: ToolMeta[] = [
+  {
+    slug: 'pdf-tools',
+    name: 'PDF Merge, Split & Compress',
+    short: 'Merge, split, compress and convert PDF files.',
+    description:
+      'Merge several PDF files into one, split a PDF into separate pages, compress a PDF to reduce its size, and convert PDF pages to text or images. All processing is local to your browser.',
+    category: 'PDF & Documents',
+    icon: FileText,
+    keywords: ['pdf merge', 'split pdf', 'compress pdf', 'pdf to text', 'combine pdf online'],
+    popular: true,
+  },
   {
     slug: 'image-converter',
     name: 'Universal Image Converter',
@@ -63,6 +79,7 @@ export const TOOLS: ToolMeta[] = [
     category: 'Image & Media',
     icon: ImageIcon,
     keywords: ['image converter', 'png to jpg', 'webp converter', 'avif converter', 'convert image online'],
+    popular: true,
   },
   {
     slug: 'image-resizer',
@@ -73,6 +90,7 @@ export const TOOLS: ToolMeta[] = [
     category: 'Image & Media',
     icon: Crop,
     keywords: ['image resizer', 'compress image', 'crop image online', 'reduce image size', 'resize photo'],
+    popular: true,
   },
   {
     slug: 'background-remover',
@@ -83,6 +101,28 @@ export const TOOLS: ToolMeta[] = [
     category: 'Image & Media',
     icon: Scissors,
     keywords: ['background remover', 'remove bg', 'transparent png', 'remove background from image'],
+    popular: true,
+  },
+  {
+    slug: 'qr-code',
+    name: 'QR Code Generator & Scanner',
+    short: 'Create custom QR codes and scan them from a camera.',
+    description:
+      'Create QR codes for links, text, email, phone numbers, SMS and WiFi with custom colors, size and a center logo. Scan QR codes from your camera or from an uploaded image.',
+    category: 'Time & Utilities',
+    icon: QrCode,
+    keywords: ['qr code generator', 'qr code scanner', 'custom qr code', 'scan qr from image'],
+    popular: true,
+  },
+  {
+    slug: 'code-formatter',
+    name: 'Code Formatter & Minifier',
+    short: 'Format, beautify and minify HTML, CSS, JS and JSON.',
+    description:
+      'Clean up and beautify HTML, CSS, JavaScript and JSON, or minify them to reduce file size. Detect errors in JSON, copy the result and download it as a file.',
+    category: 'Developer Tools',
+    icon: Braces,
+    keywords: ['code formatter', 'json formatter', 'css beautifier', 'javascript minifier', 'html formatter'],
   },
   {
     slug: 'color-tools',
@@ -103,36 +143,6 @@ export const TOOLS: ToolMeta[] = [
     category: 'Image & Media',
     icon: Youtube,
     keywords: ['youtube thumbnail downloader', 'youtube thumbnail grabber', 'hd thumbnail', 'download youtube thumbnail'],
-  },
-  {
-    slug: 'screen-recorder',
-    name: 'Screen Recorder & Screenshot',
-    short: 'Record your screen or capture a screenshot in the browser.',
-    description:
-      'Record your screen, a window or a browser tab with optional microphone audio, or capture a full-page screenshot, directly in your browser. No plugin, no watermark and nothing leaves your device.',
-    category: 'Image & Media',
-    icon: Video,
-    keywords: ['screen recorder', 'record screen online', 'screenshot tool', 'tab recorder', 'free screen recorder'],
-  },
-  {
-    slug: 'pdf-tools',
-    name: 'PDF Merge, Split & Compress',
-    short: 'Merge, split, compress and convert PDF files.',
-    description:
-      'Merge several PDF files into one, split a PDF into separate pages, compress a PDF to reduce its size, and convert PDF pages to text or images. All processing is local to your browser.',
-    category: 'PDF & Documents',
-    icon: FileText,
-    keywords: ['pdf merge', 'split pdf', 'compress pdf', 'pdf to text', 'combine pdf online'],
-  },
-  {
-    slug: 'code-formatter',
-    name: 'Code Formatter & Minifier',
-    short: 'Format, beautify and minify HTML, CSS, JS and JSON.',
-    description:
-      'Clean up and beautify HTML, CSS, JavaScript and JSON, or minify them to reduce file size. Detect errors in JSON, copy the result and download it as a file.',
-    category: 'Developer Tools',
-    icon: Braces,
-    keywords: ['code formatter', 'json formatter', 'css beautifier', 'javascript minifier', 'html formatter'],
   },
   {
     slug: 'my-ip',
@@ -187,22 +197,12 @@ export const TOOLS: ToolMeta[] = [
   {
     slug: 'text-to-speech',
     name: 'Text to Speech Generator',
-    short: 'Turn text into downloadable audio with any voice.',
+    short: 'Hear any text read aloud with a voice of your choice.',
     description:
-      'Turn written text into natural speech using the voices built into your browser. Choose a voice, adjust pitch and speed, preview instantly and download the result as an audio file.',
+      'Turn written text into natural speech using the voices built into your browser. Choose a voice, adjust pitch, speed and volume, then play, pause or stop the reading at any time.',
     category: 'Text & Audio',
     icon: Volume2,
     keywords: ['text to speech', 'tts online', 'speech generator', 'voice generator', 'read text aloud'],
-  },
-  {
-    slug: 'qr-code',
-    name: 'QR Code Generator & Scanner',
-    short: 'Create custom QR codes and scan them from a camera.',
-    description:
-      'Create QR codes for links, text, email, phone numbers, SMS and WiFi with custom colors, size and a center logo. Scan QR codes from your camera or from an uploaded image.',
-    category: 'Time & Utilities',
-    icon: QrCode,
-    keywords: ['qr code generator', 'qr code scanner', 'custom qr code', 'scan qr from image'],
   },
   {
     slug: 'loan-calculator',
@@ -259,6 +259,8 @@ export const TOOLS: ToolMeta[] = [
 export const TOOL_BY_SLUG: Record<string, ToolMeta> = Object.fromEntries(
   TOOLS.map((t) => [t.slug, t]),
 )
+
+export const POPULAR_TOOLS: ToolMeta[] = TOOLS.filter((t) => t.popular)
 
 export function toolsByCategory(): { category: Category; tools: ToolMeta[] }[] {
   return CATEGORIES.map((category) => ({

@@ -173,42 +173,6 @@ export default function PdfTools({ tool }: { tool: ToolMeta }) {
     <ToolShell
       tool={tool}
       adSlot="pdf-tools"
-      content={
-        <>
-          <h2>Merge, split, compress and read PDFs</h2>
-          <p>
-            Pick a mode above, add your PDF files and press the action button. Everything is
-            processed in your browser, so your documents are never uploaded.
-          </p>
-          <h2>What each mode does</h2>
-          <ul>
-            <li><strong>Merge</strong> — combines several PDFs into one, in the order shown.</li>
-            <li><strong>Split</strong> — keeps only the pages you list, for example <code>1-3,5,8-10</code>.</li>
-            <li><strong>Compress</strong> — re-renders pages as images to reduce file size, best for scanned documents.</li>
-            <li><strong>Extract text</strong> — pulls selectable text out of a PDF so you can copy or reuse it.</li>
-          </ul>
-          <h2>A note on compression</h2>
-          <p>
-            Compression works by rendering each page as an image, so the text is no longer
-            selectable in the output. It gives the biggest savings on scanned, image-heavy files. For
-            text documents the saving may be small.
-          </p>
-        </>
-      }
-      faqs={[
-        {
-          q: 'Are my PDFs uploaded to a server?',
-          a: 'No. Merging, splitting, compressing and text extraction all run locally in your browser, so your documents stay on your device.',
-        },
-        {
-          q: 'How do I select specific pages to split?',
-          a: 'Enter a range such as 1-3,5,8-10 in the pages field. Use commas between ranges and hyphens for a span of pages.',
-        },
-        {
-          q: 'Why did compression make my file smaller but not editable?',
-          a: 'Compression renders each page as an image, which shrinks image-heavy PDFs but removes selectable text. Keep the original if you need to edit it later.',
-        },
-      ]}
     >
       <div className="mb-5">
         <SegmentedControl<Mode>

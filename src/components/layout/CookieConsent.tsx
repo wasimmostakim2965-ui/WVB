@@ -1,31 +1,20 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Cookie } from 'lucide-react'
-
-const KEY = 'wvb-consent-v1'
-
-type Consent = 'accepted' | 'essential' | null
+import { getConsent, setConsent, type Consent } from '@/lib/consent'
 
 export function CookieConsent() {
-  const [consent, setConsent] = useState<Consent>(null)
+  const [consent, setLocal] = useState<Consent>(null)
   const [ready, setReady] = useState(false)
 
   useEffect(() => {
-    try {
-      setConsent(localStorage.getItem(KEY) as Consent)
-    } catch {
-      setConsent(null)
-    }
+    setLocal(getConsent())
     setReady(true)
   }, [])
 
   const decide = (value: Exclude<Consent, null>) => {
-    try {
-      localStorage.setItem(KEY, value)
-    } catch {
-      /* storage blocked */
-    }
     setConsent(value)
+    setLocal(value)
   }
 
   if (!ready || consent) return null

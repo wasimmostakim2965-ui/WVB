@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import { Sparkles } from 'lucide-react'
-import { CATEGORIES, TOOLS } from '@/data/tools'
+import { CATEGORIES, POPULAR_TOOLS } from '@/data/tools'
+import { clearConsent } from '@/lib/consent'
 
 const LEGAL = [
   { to: '/privacy-policy', label: 'Privacy Policy' },
@@ -24,15 +25,15 @@ export function Footer() {
             </span>
           </Link>
           <p className="mt-3 max-w-xs text-sm leading-6 text-ink-mute">
-            Twenty fast, private tools that run entirely in your browser. No account, no upload,
-            no cost.
+            Nineteen fast, private tools that run entirely in your browser. No account, no upload, no
+            cost.
           </p>
         </div>
 
         <div>
           <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-ink">Popular tools</h3>
           <ul className="space-y-2 text-sm">
-            {TOOLS.slice(0, 6).map((t) => (
+            {POPULAR_TOOLS.slice(0, 6).map((t) => (
               <li key={t.slug}>
                 <Link to={`/${t.slug}`} className="text-ink-mute transition hover:text-brand-700">
                   {t.name}
@@ -95,6 +96,9 @@ export function Footer() {
             <Link to="/privacy-policy" className="hover:text-brand-700">
               Your privacy
             </Link>
+            <button type="button" onClick={clearConsent} className="hover:text-brand-700">
+              Cookie settings
+            </button>
           </p>
         </div>
       </div>

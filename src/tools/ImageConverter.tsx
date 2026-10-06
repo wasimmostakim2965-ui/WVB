@@ -115,54 +115,6 @@ export default function ImageConverter({ tool }: { tool: ToolMeta }) {
     <ToolShell
       tool={tool}
       adSlot="image-converter"
-      content={
-        <>
-          <h2>How to convert an image</h2>
-          <p>
-            Drag one or more images onto the drop area above, or click it to choose files. Pick the
-            format you want from the list, adjust the quality slider if you are converting to JPG,
-            WEBP or AVIF, and your converted files appear below with a download button.
-          </p>
-          <h2>Supported formats</h2>
-          <p>
-            You can convert from JPG, PNG, WEBP, GIF, SVG, BMP and AVIF, and export to PNG, JPG,
-            WEBP, AVIF or BMP. Transparent areas are preserved in PNG, WEBP and AVIF; they are
-            filled with white when you choose JPG or BMP, because those formats have no transparency.
-          </p>
-          <h2>Why convert in your browser?</h2>
-          <p>
-            This converter uses the image engine already built into your browser, so nothing is
-            uploaded. That means your photos stay private, the conversion is as fast as your device
-            allows, and there is no file size limit imposed by a server.
-          </p>
-          <h3>Choosing a format</h3>
-          <ul>
-            <li><strong>PNG</strong> — lossless and supports transparency; good for logos and screenshots.</li>
-            <li><strong>JPG</strong> — small files for photographs, but no transparency.</li>
-            <li><strong>WEBP</strong> — modern format that is small and supports transparency.</li>
-            <li><strong>AVIF</strong> — newest format with the smallest files, supported in current browsers.</li>
-            <li><strong>BMP</strong> — uncompressed legacy format for compatibility.</li>
-          </ul>
-        </>
-      }
-      faqs={[
-        {
-          q: 'Are my images uploaded to a server?',
-          a: 'No. Conversion happens entirely in your browser using the canvas API, so your files never leave your device.',
-        },
-        {
-          q: 'Is there a file size limit?',
-          a: 'There is no server limit. Very large images are limited only by your device memory, and multi-megapixel photos usually convert in under a second.',
-        },
-        {
-          q: 'Can I convert several images at once?',
-          a: 'Yes. Select or drop multiple files and each one is converted and listed with its own download button.',
-        },
-        {
-          q: 'Why does my transparent PNG have a white background after converting to JPG?',
-          a: 'JPG does not support transparency. Transparent pixels are filled with white so the image can be saved in that format.',
-        },
-      ]}
     >
       <div className="grid gap-5 lg:grid-cols-[1fr_320px]">
         <Panel title="Upload images" description="JPG, PNG, WEBP, GIF, SVG, BMP or AVIF">

@@ -58,42 +58,6 @@ export default function BackgroundRemover({ tool }: { tool: ToolMeta }) {
     <ToolShell
       tool={tool}
       adSlot="background-remover"
-      content={
-        <>
-          <h2>Remove a background in one click</h2>
-          <p>
-            Choose a photo and press <strong>Remove background</strong>. An AI model identifies the
-            subject and erases everything behind it, leaving a clean transparent PNG you can
-            download.
-          </p>
-          <h2>Private by design</h2>
-          <p>
-            The AI model runs <strong>on your own device</strong> using WebAssembly. Your image is
-            never uploaded. The first time you use the tool your browser downloads the model (a few
-            megabytes), and after that it is cached for instant use.
-          </p>
-          <h2>Getting the best result</h2>
-          <ul>
-            <li>Use a clear photo where the subject stands out from the background.</li>
-            <li>Good, even lighting improves the edges of hair and fur.</li>
-            <li>Very large images take longer; resize first if you only need a small output.</li>
-          </ul>
-        </>
-      }
-      faqs={[
-        {
-          q: 'Is my photo uploaded to a server?',
-          a: 'No. The AI model is downloaded to your browser once and runs locally, so your photo never leaves your device.',
-        },
-        {
-          q: 'Why does the first run take longer?',
-          a: 'The model files need to be downloaded once. They are cached afterwards, so later runs are much faster and work offline.',
-        },
-        {
-          q: 'What format is the result?',
-          a: 'A PNG with a transparent background, which you can place over any colour or image.',
-        },
-      ]}
     >
       <div className="grid gap-5 lg:grid-cols-2">
         <Panel title="Original image">

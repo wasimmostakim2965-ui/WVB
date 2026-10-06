@@ -168,47 +168,6 @@ export default function PasswordGenerator({ tool }: { tool: ToolMeta }) {
     <ToolShell
       tool={tool}
       adSlot="password-generator"
-      content={
-        <>
-          <h2>Generate strong passwords and test them</h2>
-          <p>
-            In <strong>Generate</strong> mode the tool builds a random password from the character
-            types you choose. In <strong>Check</strong> mode you can type an existing password and
-            see how strong it is and roughly how long it would take an attacker to crack it.
-          </p>
-          <h2>What makes a password strong</h2>
-          <ul>
-            <li><strong>Length matters most.</strong> Every extra character multiplies the effort needed to crack it.</li>
-            <li><strong>Use a mix of types</strong> — upper and lower case, numbers and symbols.</li>
-            <li><strong>Avoid patterns</strong> such as "password", "qwerty", "123456" or repeated characters.</li>
-            <li><strong>Never reuse</strong> the same password on more than one site.</li>
-          </ul>
-          <h2>Privacy</h2>
-          <p>
-            Passwords are created and analysed entirely in your browser using a secure random number
-            generator. Nothing is transmitted or stored, so you can check a real password safely.
-          </p>
-          <h2>Use a password manager</h2>
-          <p>
-            The easiest way to use long, unique passwords everywhere is a password manager. It
-            remembers them for you, so you only need to memorise one strong master password.
-          </p>
-        </>
-      }
-      faqs={[
-        {
-          q: 'Is it safe to check my real password here?',
-          a: 'Yes. The analysis runs entirely in your browser and your password is never sent anywhere, so nothing leaves your device.',
-        },
-        {
-          q: 'How long should my password be?',
-          a: 'Sixteen characters or more is a good target for important accounts. With a mix of character types, 16 random characters is extremely hard to crack.',
-        },
-        {
-          q: 'What does the crack time mean?',
-          a: 'It estimates how long an attacker could take to guess your password offline at ten billion attempts per second, which is a realistic modern figure.',
-        },
-      ]}
     >
       <div className="mb-5">
         <SegmentedControl

@@ -45,16 +45,19 @@ export default function PrivacyPolicy() {
       </p>
       <ul>
         <li>
-          <strong>My IP Address</strong> sends a request to a public IP lookup service to read your
+          <strong>My IP Address</strong> sends a request to <strong>ipwho.is</strong>, a public IP lookup service, to read your
           public IP address and its approximate location.
         </li>
         <li>
-          <strong>Speed Test</strong> transfers test data to and from a public endpoint to measure
+          <strong>Internet Speed Test</strong> transfers test data to and from <strong>Cloudflare</strong>'s public speed-test endpoint to measure
           your connection speed.
         </li>
         <li>
-          <strong>Currency Converter</strong> requests current exchange rates from a public rates
+          <strong>Unit, Currency &amp; Data Converter</strong> requests current exchange rates from <strong>open.er-api.com</strong>, a public rates
           service.
+        </li>
+        <li>
+          <strong>YouTube Thumbnail Downloader</strong> loads the thumbnail image directly from YouTube's image servers (img.youtube.com) for the video link you paste.
         </li>
         <li>
           <strong>AI Background Remover</strong> downloads an AI model the first time you use it.

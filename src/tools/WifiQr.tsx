@@ -59,41 +59,6 @@ export default function WifiQr({ tool }: { tool: ToolMeta }) {
     <ToolShell
       tool={tool}
       adSlot="wifi-qr"
-      content={
-        <>
-          <h2>Share your WiFi with a QR code</h2>
-          <p>
-            Type your network name and password and a QR code appears. Anyone can point their phone
-            camera at it to join the network without typing the password, which is much easier than
-            reading it aloud to guests.
-          </p>
-          <h2>How to scan it</h2>
-          <ul>
-            <li><strong>iPhone:</strong> open the Camera app and hold it over the code, then tap the notification that appears.</li>
-            <li><strong>Android:</strong> open the Camera or Google Lens, or use the WiFi settings scan option.</li>
-          </ul>
-          <h2>Is it safe?</h2>
-          <p>
-            The QR code contains your WiFi password in plain text, exactly as the network standard
-            defines. Only show it to people you trust, and treat a printed copy the way you would
-            treat the password itself. The code is generated in your browser and never uploaded.
-          </p>
-        </>
-      }
-      faqs={[
-        {
-          q: 'Does this work on both iPhone and Android?',
-          a: 'Yes. Modern iPhones and Android phones can join a network by scanning a standard WiFi QR code with their camera.',
-        },
-        {
-          q: 'What does the "hidden network" option do?',
-          a: 'Tick it if your router does not broadcast its network name. The code then tells the phone that the network is hidden so it can still connect.',
-        },
-        {
-          q: 'Can I print the code for guests?',
-          a: 'Yes. Use the print button to open a clean, printable card with the network name, the QR code and the password.',
-        },
-      ]}
     >
       <div className="grid gap-5 lg:grid-cols-2">
         <Panel title="Network details">

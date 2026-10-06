@@ -59,48 +59,6 @@ export default function BmiCalculator({ tool }: { tool: ToolMeta }) {
     <ToolShell
       tool={tool}
       adSlot="bmi-calculator"
-      content={
-        <>
-          <h2>Check your BMI, calories and ideal weight</h2>
-          <p>
-            Enter your height and weight to calculate your body mass index (BMI), see which category
-            it falls into, and get an estimate of the healthy weight range for your height. Add your
-            age and activity level to estimate how many calories you burn each day.
-          </p>
-          <h2>Understanding BMI</h2>
-          <p>
-            BMI compares your weight to your height. For most adults the categories are: below 18.5
-            is underweight, 18.5 to 24.9 is a healthy weight, 25 to 29.9 is overweight, and 30 or
-            above is obese.
-          </p>
-          <h2>What BMI does not tell you</h2>
-          <p>
-            BMI is a simple screening measure, not a diagnosis. It does not distinguish muscle from
-            fat, so very muscular people may read as overweight. It also uses the same scale for
-            everyone, which does not suit every body type, and it is not designed for children.
-          </p>
-          <h2>Daily calories</h2>
-          <p>
-            Your calorie estimate uses the Mifflin–St Jeor formula for your resting metabolic rate,
-            multiplied by an activity factor. It is a starting point for planning meals, not medical
-            advice.
-          </p>
-        </>
-      }
-      faqs={[
-        {
-          q: 'Is BMI accurate for everyone?',
-          a: 'No. BMI does not account for muscle mass, bone density, body shape or age, and it is not suitable for children or pregnant women. Treat it as a rough screening guide.',
-        },
-        {
-          q: 'How is the calorie figure calculated?',
-          a: 'It uses the Mifflin–St Jeor equation for your basal metabolic rate, then multiplies by an activity factor based on how often you exercise.',
-        },
-        {
-          q: 'What is a healthy weight for my height?',
-          a: 'The tool shows the weight range that corresponds to a BMI of 18.5 to 24.9 for your height, which is the usual healthy band for adults.',
-        },
-      ]}
     >
       <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
         <Panel title="Your measurements">

@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 export const SITE = {
   name: 'WVB Tools',
   domain: 'https://wvbtools.com',
-  tagline: '20 free online tools that run in your browser',
+  tagline: '19 free online tools that run in your browser',
   twitter: '@wvbtools',
 }
 

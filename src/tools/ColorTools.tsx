@@ -133,41 +133,6 @@ export default function ColorTools({ tool }: { tool: ToolMeta }) {
     <ToolShell
       tool={tool}
       adSlot="color-tools"
-      content={
-        <>
-          <h2>Pick, convert and combine colours</h2>
-          <p>
-            Use the <strong>Picker</strong> to choose a colour and read its HEX, RGB and HSL values.
-            Switch to <strong>Palette</strong> to build and save a set of colours with automatic
-            harmonies, or to <strong>Gradient</strong> to design a CSS gradient and copy the code.
-          </p>
-          <h2>Pick a colour from an image</h2>
-          <p>
-            In Picker mode you can upload a picture and click anywhere on it to read the exact colour
-            under your cursor — ideal for matching a brand colour from a logo or a photo.
-          </p>
-          <h2>Understanding the formats</h2>
-          <ul>
-            <li><strong>HEX</strong> — a six-digit code used in HTML and CSS, such as #345EF5.</li>
-            <li><strong>RGB</strong> — red, green and blue values from 0 to 255.</li>
-            <li><strong>HSL</strong> — hue, saturation and lightness, which is easier to reason about when adjusting a colour.</li>
-          </ul>
-        </>
-      }
-      faqs={[
-        {
-          q: 'Can I get a colour code from an image?',
-          a: 'Yes. In Picker mode, upload an image and click any point on it. The tool reads the pixel colour and converts it to HEX, RGB and HSL.',
-        },
-        {
-          q: 'Is my image uploaded?',
-          a: 'No. The image is drawn to a canvas in your browser and read locally, so nothing is sent anywhere.',
-        },
-        {
-          q: 'Can I copy the CSS gradient code?',
-          a: 'Yes. In Gradient mode the CSS is shown with a copy button, ready to paste into your stylesheet.',
-        },
-      ]}
     >
       <div className="mb-5">
         <SegmentedControl<Mode>

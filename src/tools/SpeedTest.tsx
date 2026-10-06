@@ -160,49 +160,6 @@ export default function SpeedTest({ tool }: { tool: ToolMeta }) {
     <ToolShell
       tool={tool}
       adSlot="speed-test"
-      content={
-        <>
-          <h2>Test your internet speed</h2>
-          <p>
-            Press start and the test runs three checks in sequence: <strong>latency</strong> (how
-            quickly data travels back and forth, measured in milliseconds),{' '}
-            <strong>download speed</strong> (how fast data arrives) and <strong>upload speed</strong>{' '}
-            (how fast data leaves your device). Speeds are shown in megabits per second (Mbps).
-          </p>
-          <h2>Understanding the numbers</h2>
-          <ul>
-            <li><strong>Ping below 50 ms</strong> feels instant for browsing, calls and gaming.</li>
-            <li><strong>Download 25 Mbps or more</strong> handles streaming in 4K on one device.</li>
-            <li><strong>Upload 10 Mbps or more</strong> is comfortable for video calls and large file transfers.</li>
-            <li><strong>Jitter</strong> measures how much the latency varies; lower is better for calls.</li>
-          </ul>
-          <h2>Getting the most accurate result</h2>
-          <p>
-            For a fair reading, stop other downloads and streams, move closer to your router, and run
-            the test more than once. Wi-Fi speed varies with distance and interference, so a wired
-            connection will always be the most consistent.
-          </p>
-          <h2>How the test works</h2>
-          <p>
-            The tool transfers small test files to and from a public speed-test endpoint and measures
-            how long each transfer takes. No personal information is collected.
-          </p>
-        </>
-      }
-      faqs={[
-        {
-          q: 'Why is my result lower than my provider advertises?',
-          a: 'Advertised speeds are the maximum under ideal conditions. Wi-Fi, distance, other devices, peak-time congestion and your own device can all reduce the figure you actually get.',
-        },
-        {
-          q: 'How much speed do I need?',
-          a: 'For one person streaming HD and browsing, around 25 Mbps download is comfortable. Add roughly 5–10 Mbps for each additional stream, and choose an upload speed of at least 10 Mbps if you make video calls.',
-        },
-        {
-          q: 'Does the test use my data allowance?',
-          a: 'Yes, a small amount. The test transfers a few megabytes in each direction, so on a metered mobile connection it will use a little data.',
-        },
-      ]}
     >
       <Panel title="Speed test">
         <div className="grid gap-6 lg:grid-cols-[300px_1fr] lg:items-center">

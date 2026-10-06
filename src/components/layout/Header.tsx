@@ -95,21 +95,18 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-2">
-          <Link to="/tools" className="hidden btn-primary sm:inline-flex">
-            Browse tools
-          </Link>
-          <button
-            type="button"
-            className="grid h-10 w-10 place-items-center rounded-lg border border-surface-line text-ink-soft md:hidden"
-            aria-label={open ? 'Close menu' : 'Open menu'}
-            aria-expanded={open}
-            onClick={() => setOpen((v) => !v)}
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              className="grid h-10 w-10 place-items-center rounded-lg border border-surface-line text-ink-soft md:hidden"
+              aria-label={open ? 'Close menu' : 'Open menu'}
+              aria-expanded={open}
+              onClick={() => setOpen((v) => !v)}
+            >
+              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+          </div>
         </div>
-      </div>
 
       {open && (
         <div className="border-t border-surface-line bg-white md:hidden">

@@ -191,43 +191,6 @@ export default function UnitConverter({ tool }: { tool: ToolMeta }) {
     <ToolShell
       tool={tool}
       adSlot="unit-converter"
-      content={
-        <>
-          <h2>Convert units, file sizes and currency</h2>
-          <p>
-            Pick a category, enter a value and choose the units on each side. The result updates as
-            you type. Categories cover length, weight, temperature, area, speed, digital storage and
-            live currency rates.
-          </p>
-          <h2>Digital storage: KB, MB, GB and TB</h2>
-          <p>
-            Data units use the binary convention of 1024, which is what operating systems show. That
-            is why a drive sold as 1 TB reports about 931 GB in your file manager — the manufacturer
-            uses 1000 while the system uses 1024.
-          </p>
-          <h2>Currency rates</h2>
-          <p>
-            Currency conversion uses live mid-market rates from a public exchange-rate service. Rates
-            update roughly once a day, and the date shown tells you when they were last refreshed.
-            Banks and payment providers add a margin, so the amount you actually receive may differ
-            slightly.
-          </p>
-        </>
-      }
-      faqs={[
-        {
-          q: 'Are the currency rates live?',
-          a: 'Yes. The converter fetches current mid-market rates from a public service and shows the date they were last updated, usually within the last day.',
-        },
-        {
-          q: 'Why is 1 GB shown as 1024 MB?',
-          a: 'This tool uses the binary convention of 1024, which is what operating systems use. Manufacturers sometimes use 1000, which is why a drive appears smaller than its advertised size.',
-        },
-        {
-          q: 'Can I convert between bits and bytes?',
-          a: 'Yes. Choose a data unit and select bit or byte units such as Mb or MB, which is useful for comparing internet speeds with file sizes.',
-        },
-      ]}
     >
       <div className="mb-5 flex flex-wrap gap-2">
         {(

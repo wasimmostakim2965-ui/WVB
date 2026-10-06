@@ -6,7 +6,7 @@ export default function About() {
   useSeo({
     title: `About Us | ${SITE.name}`,
     description:
-      'WVB Tools is a free collection of 20 browser-based utilities built for speed and privacy. Learn who we are and how the tools work.',
+      'WVB Tools is a free collection of 19 browser-based utilities built for speed and privacy. Learn who we are and how the tools work.',
     path: '/about',
   })
   return (
@@ -35,11 +35,11 @@ export default function About() {
           </p>
 
           <h2>What we offer</h2>
-          <p>The suite covers six areas:</p>
+          <p>The suite covers eight areas:</p>
           <ul>
             <li>
               <strong>Image &amp; media</strong> — conversion, resizing, background removal, colour
-              tools, thumbnails and screen recording.
+              tools and thumbnails.
             </li>
             <li>
               <strong>PDF &amp; documents</strong> — merging, splitting, compressing and reading PDFs.

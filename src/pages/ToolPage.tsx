@@ -6,7 +6,6 @@ import ImageResizer from '@/tools/ImageResizer'
 import BackgroundRemover from '@/tools/BackgroundRemover'
 import ColorTools from '@/tools/ColorTools'
 import YoutubeThumbnail from '@/tools/YoutubeThumbnail'
-import ScreenRecorder from '@/tools/ScreenRecorder'
 import PdfTools from '@/tools/PdfTools'
 import CodeFormatter from '@/tools/CodeFormatter'
 import MyIp from '@/tools/MyIp'
@@ -31,7 +30,6 @@ const REGISTRY: Record<string, ToolComponent> = {
   'background-remover': BackgroundRemover,
   'color-tools': ColorTools,
   'youtube-thumbnail': YoutubeThumbnail,
-  'screen-recorder': ScreenRecorder,
   'pdf-tools': PdfTools,
   'code-formatter': CodeFormatter,
   'my-ip': MyIp,

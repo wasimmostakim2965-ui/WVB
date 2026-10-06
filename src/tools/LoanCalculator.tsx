@@ -49,47 +49,6 @@ export default function LoanCalculator({ tool }: { tool: ToolMeta }) {
     <ToolShell
       tool={tool}
       adSlot="loan-calculator"
-      content={
-        <>
-          <h2>Work out your loan repayments</h2>
-          <p>
-            Move the sliders to set the loan amount, the annual interest rate and the term in years.
-            The calculator shows your <strong>monthly instalment (EMI)</strong>, the total interest
-            you will pay over the life of the loan and the overall amount repaid.
-          </p>
-          <h2>How EMI is calculated</h2>
-          <p>
-            The monthly instalment is based on the standard amortisation formula, which spreads the
-            loan into equal payments. Early payments are mostly interest; later payments are mostly
-            principal. The yearly breakdown below shows how that balance shifts over time.
-          </p>
-          <h2>Ways to reduce the interest you pay</h2>
-          <ul>
-            <li>Choose a shorter term — the monthly payment rises but the total interest falls.</li>
-            <li>Make a larger down payment so you borrow less.</li>
-            <li>Compare rates, since a small difference adds up over many years.</li>
-            <li>Check whether making extra payments is allowed without a penalty.</li>
-          </ul>
-          <p>
-            This calculator is for planning only and does not include fees or insurance, which many
-            lenders add on top.
-          </p>
-        </>
-      }
-      faqs={[
-        {
-          q: 'What does EMI mean?',
-          a: 'EMI stands for Equated Monthly Instalment — the fixed amount you pay each month, covering both interest and principal.',
-        },
-        {
-          q: 'Is a shorter loan always better?',
-          a: 'It reduces the total interest, but the monthly payment is higher. Choose a term where the instalment fits comfortably within your budget.',
-        },
-        {
-          q: 'Does this include fees?',
-          a: 'No. Processing fees, insurance and taxes are not included, so the actual cost from a lender may be slightly higher.',
-        },
-      ]}
     >
       <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
         <Panel title="Loan details">

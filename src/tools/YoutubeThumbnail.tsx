@@ -74,46 +74,6 @@ export default function YoutubeThumbnail({ tool }: { tool: ToolMeta }) {
     <ToolShell
       tool={tool}
       adSlot="youtube-thumbnail"
-      content={
-        <>
-          <h2>Download YouTube thumbnails in HD</h2>
-          <p>
-            Paste a YouTube video link or video ID and press <strong>Get thumbnails</strong>. Every
-            available size is shown, from the 1280×720 HD image down to the small default, each with
-            a download button.
-          </p>
-          <h2>Which link formats work?</h2>
-          <ul>
-            <li>Standard links: <code>youtube.com/watch?v=VIDEO_ID</code></li>
-            <li>Short links: <code>youtu.be/VIDEO_ID</code></li>
-            <li>Shorts: <code>youtube.com/shorts/VIDEO_ID</code></li>
-            <li>Embeds and live links, or just the 11-character video ID on its own</li>
-          </ul>
-          <h2>What if the HD image is missing?</h2>
-          <p>
-            Not every video has a 1280×720 thumbnail. If the HD version is unavailable the image will
-            not load; use the SD or HQ size instead, which almost always exist.
-          </p>
-          <p>
-            Remember to respect copyright: thumbnails belong to their creators. Use them for
-            reference, commentary or where you have permission.
-          </p>
-        </>
-      }
-      faqs={[
-        {
-          q: 'Is this tool free?',
-          a: 'Yes, it is completely free and requires no account. Thumbnails are loaded directly from YouTube\'s public image servers.',
-        },
-        {
-          q: 'Why is the HD thumbnail blank?',
-          a: 'Some videos were uploaded without a 1280×720 thumbnail. In that case choose the SD or HQ size, which are nearly always available.',
-        },
-        {
-          q: 'Can I use these thumbnails in my own videos?',
-          a: 'Thumbnails are owned by their creators. Only reuse them where you have permission or where your use is allowed by law.',
-        },
-      ]}
     >
       <Panel title="Video link">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end">
