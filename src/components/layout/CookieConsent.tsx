@@ -1,23 +1,13 @@
-import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Cookie } from 'lucide-react'
-import { getConsent, setConsent, type Consent } from '@/lib/consent'
+import { setConsent, useConsent, type Consent } from '@/lib/consent'
 
 export function CookieConsent() {
-  const [consent, setLocal] = useState<Consent>(null)
-  const [ready, setReady] = useState(false)
+  const consent = useConsent()
 
-  useEffect(() => {
-    setLocal(getConsent())
-    setReady(true)
-  }, [])
+  const decide = (value: Exclude<Consent, null>) => setConsent(value)
 
-  const decide = (value: Exclude<Consent, null>) => {
-    setConsent(value)
-    setLocal(value)
-  }
-
-  if (!ready || consent) return null
+  if (consent) return null
 
   return (
     <div
