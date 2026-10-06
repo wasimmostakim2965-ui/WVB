@@ -14,5 +14,4 @@ export const AD_UNITS: Record<string, string> = {
   homeTop: '',
   toolsTop: '',
   toolSidebar: '',
-  legalBottom: '',
 }

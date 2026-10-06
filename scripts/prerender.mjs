@@ -120,7 +120,7 @@ async function main() {
   }
 
   // A dedicated 404 document. Vercel serves this for any unknown path.
-  const notFound = template
+  const notFound = stripSeoTags(template)
     .replace(
       '<!--seo-->',
       '<title>Page not found | WVB Tools</title>\n    <meta name="robots" content="noindex, follow" />',

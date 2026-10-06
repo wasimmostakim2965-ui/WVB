@@ -1,8 +1,6 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { useSeo, SITE } from '@/lib/seo'
-import { AdSlot } from '@/components/ui/AdSlot'
-import { AD_UNITS } from '@/lib/ads'
 
 export function LegalPage({
   title,
@@ -45,7 +43,6 @@ export function LegalPage({
             .
           </p>
         </div>
-        <AdSlot slot={AD_UNITS.legalBottom} minHeight={250} className="mt-12" />
       </div>
     </div>
   )

@@ -199,7 +199,12 @@ export function buildRouteManifest(): RouteMeta[] {
               'query-input': 'required name=search_term_string',
             },
           }
-        : null,
+        : r.path === '/tools'
+          ? breadcrumbLd([
+              { name: 'Home', path: '/' },
+              { name: 'Tools', path: '/tools' },
+            ])
+          : null,
   }))
 
   for (const tool of TOOLS) {

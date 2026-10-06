@@ -1,5 +1,4 @@
 import { useSeo, SITE } from '@/lib/seo'
-import { AdSlot } from '@/components/ui/AdSlot'
 import { TOOLS } from '@/data/tools'
 
 export default function About() {
@@ -78,7 +77,6 @@ export default function About() {
             visit our <a href="/contact">contact page</a>.
           </p>
         </div>
-        <AdSlot slot="about-bottom" minHeight={250} className="mt-12" />
       </div>
     </div>
   )

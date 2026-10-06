@@ -2,8 +2,6 @@ import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
 import { Mail, MessageSquare, ShieldCheck } from 'lucide-react'
 import { useSeo, SITE } from '@/lib/seo'
-import { AdSlot } from '@/components/ui/AdSlot'
-import { AD_UNITS } from '@/lib/ads'
 import { Labeled, Notice, Panel, TextArea, TextInput } from '@/components/ui/Primitives'
 
 const FAQS = [
@@ -140,7 +138,6 @@ export default function Contact() {
           .
         </p>
 
-        <AdSlot slot={AD_UNITS.legalBottom} minHeight={250} className="mt-12" />
       </div>
     </div>
   )

@@ -4,6 +4,7 @@ import { Check, ChevronRight, ShieldCheck } from 'lucide-react'
 import { TOOLS, type ToolMeta } from '@/data/tools'
 import { getToolContent } from '@/data/toolContent'
 import { AdSlot } from '@/components/ui/AdSlot'
+import { AD_UNITS } from '@/lib/ads'
 import {
   useSeo,
   breadcrumbLd,
@@ -136,7 +137,7 @@ export function ToolShell({ tool, children }: ToolShellProps) {
                 .
               </p>
             </div>
-            <AdSlot slot={tool.slug} minHeight={250} />
+            <AdSlot slot={AD_UNITS.toolSidebar} minHeight={250} />
           </aside>
         </div>
       )}
