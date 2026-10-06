@@ -97,7 +97,7 @@ export default function LoanCalculator({ tool }: { tool: ToolMeta }) {
             <div>
               <div className="mb-2 flex items-center justify-between text-xs font-semibold">
                 <span className="text-brand-700">Principal {principalPct.toFixed(0)}%</span>
-                <span className="text-amber-600">Interest {(100 - principalPct).toFixed(0)}%</span>
+                <span className="text-amber-700">Interest {(100 - principalPct).toFixed(0)}%</span>
               </div>
               <div className="flex h-3 overflow-hidden rounded-full bg-surface-line">
                 <div className="bg-brand-500" style={{ width: `${principalPct}%` }} />
@@ -123,7 +123,7 @@ export default function LoanCalculator({ tool }: { tool: ToolMeta }) {
                   <tr key={row.year}>
                     <td className="px-3 py-2 font-semibold text-ink">{row.year}</td>
                     <td className="px-3 py-2 text-ink-soft">{fmt(row.principal)}</td>
-                    <td className="px-3 py-2 text-amber-600">{fmt(row.interest)}</td>
+                    <td className="px-3 py-2 text-amber-700">{fmt(row.interest)}</td>
                     <td className="px-3 py-2 text-ink-mute">{fmt(row.balance)}</td>
                   </tr>
                 ))}
