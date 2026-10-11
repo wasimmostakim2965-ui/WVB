@@ -20,8 +20,8 @@ export default function PrivacyPolicy() {
         <li>Most tools run entirely in your browser. Files you open are not uploaded to us.</li>
         <li>We do not ask you to create an account and we do not sell your data.</li>
         <li>
-          We use a small number of cookies for essential functions, and advertising cookies where
-          you consent to them.
+          We use a small number of cookies for essential functions, Google Analytics to measure
+          usage, and advertising cookies where you consent to them.
         </li>
       </ul>
 
@@ -120,8 +120,13 @@ export default function PrivacyPolicy() {
 
       <h2>7. Analytics</h2>
       <p>
-        We do not currently run analytics. If we add privacy-respecting analytics in future, the
-        data will be aggregated and will not identify you, and this policy will be updated first.
+        We use <strong>Google Analytics 4</strong> to understand how the Site is used — which tools
+        are opened, how visitors arrive and roughly where they are — so we can improve them. Google
+        Analytics sets cookies (such as <code>_ga</code>) and receives your IP address and a
+        pseudonymous client id; Google states that it does not log or store IP addresses for this
+        product. We do not link this data to you as a person and we do not sell it. You can block
+        these cookies in your browser settings or with a browser add-on, and see our{' '}
+        <a href="/cookie-policy">Cookie Policy</a> for details.
       </p>
 
       <h2>8. Legal basis and your rights</h2>

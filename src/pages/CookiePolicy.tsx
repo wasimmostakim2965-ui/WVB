@@ -37,8 +37,9 @@ export default function CookiePolicy() {
       </p>
       <h3>Analytics</h3>
       <p>
-        We do not run analytics cookies. If we add privacy-respecting analytics in future, the data
-        would be aggregated and would not identify you, and this policy would be updated first.
+        We use <strong>Google Analytics 4</strong>, which sets cookies such as <code>_ga</code> and
+        <code>_ga_*</code> to measure visits and tool usage. The data is pseudonymous, is not linked
+        to you as a person and is not sold. You can block these cookies in your browser settings.
       </p>
 
       <h2>3. Managing cookies</h2>
