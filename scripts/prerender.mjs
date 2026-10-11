@@ -94,6 +94,13 @@ function buildAdsenseTags() {
 function buildNoscript(meta) {
   const lines = [`<h1>${esc(meta.title.split(' — ')[0])}</h1>`, `<p>${esc(meta.description)}</p>`]
   if (meta.intro) lines.push(`<p>${esc(meta.intro)}</p>`)
+  if (meta.tools?.length) {
+    lines.push('<h2>All tools</h2>', '<ul>')
+    for (const tool of meta.tools) {
+      lines.push(`<li><a href="/${esc(tool.slug)}">${esc(tool.name)}</a></li>`)
+    }
+    lines.push('</ul>')
+  }
   if (meta.faq?.length) {
     lines.push('<h2>Frequently asked questions</h2>')
     for (const item of meta.faq) {
