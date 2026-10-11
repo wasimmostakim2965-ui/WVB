@@ -1,6 +1,5 @@
-import { useEffect, useRef } from 'react'
+import { useEffect } from 'react'
 import { cn } from '@/lib/cn'
-import { useConsent } from '@/lib/consent'
 
 declare global {
   interface Window {
@@ -21,9 +20,9 @@ interface AdSlotProps {
 }
 
 /**
- * AdSense-ready placement. It renders only when a publisher id and an ad unit id
- * are configured *and* the visitor has accepted advertising cookies; otherwise it
- * renders nothing, so the layout stays clean and no request is made before consent.
+ * AdSense placement. It renders only when a real publisher id and an ad unit id
+ * are configured; otherwise it renders nothing, so the layout stays clean and no
+ * request is made until the site owner has set up their AdSense account.
  */
 export function AdSlot({
   slot,
@@ -33,10 +32,8 @@ export function AdSlot({
   minHeight = 120,
   label = 'Advertisement',
 }: AdSlotProps) {
-  const ref = useRef<HTMLModElement>(null)
-  const consent = useConsent()
   const client = typeof window !== 'undefined' ? window.__ADSENSE_CLIENT__ : undefined
-  const configured = Boolean(client && slot && !client.includes('XXXX')) && consent === 'accepted'
+  const configured = Boolean(client && slot)
 
   useEffect(() => {
     if (!configured) return
@@ -47,7 +44,7 @@ export function AdSlot({
     }
   }, [configured])
 
-  // Until ads are configured and consented to, render nothing.
+  // Until ads are configured, render nothing.
   if (!configured) return null
 
   return (
@@ -56,7 +53,6 @@ export function AdSlot({
         {label}
       </div>
       <ins
-        ref={ref}
         className="adsbygoogle block"
         style={{ display: 'block', minHeight }}
         data-ad-client={client}

@@ -201,7 +201,7 @@ export default function PdfTools({ tool }: { tool: ToolMeta }) {
             accept="application/pdf,.pdf"
             multiple={!single}
             onFiles={addFiles}
-            icon={<FileUp className="h-5.5 w-5.5" />}
+            icon={<FileUp className="h-5 w-5" />}
             subtitle="PDF only · processed in your browser"
           />
           {error && <Notice tone="error" className="mt-4">{error}</Notice>}

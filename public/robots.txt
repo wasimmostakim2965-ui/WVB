@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /404
 
-Sitemap: https://wvbtools.com/sitemap.xml
+Sitemap: https://www.xonomo.site/sitemap.xml

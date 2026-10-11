@@ -6,11 +6,11 @@ export default function Terms() {
       title="Terms of Service"
       description="The terms that govern your use of WVB Tools, a free collection of browser-based online utilities."
       path="/terms"
-      updated="October 5, 2026"
+      updated="October 11, 2026"
     >
       <p>
         These Terms of Service ("Terms") govern your access to and use of{' '}
-        <strong>wvbtools.com</strong> (the "Site"). By using the Site you agree to these Terms. If
+        <strong>xonomo.site</strong> (the "Site"). By using the Site you agree to these Terms. If
         you do not agree, please do not use the Site.
       </p>
 
@@ -87,7 +87,7 @@ export default function Terms() {
 
       <h2>10. Contact</h2>
       <p>
-        Questions about these Terms? Email <strong>legal@wvbtools.com</strong> or use our{' '}
+        Questions about these Terms? Email <strong>wasimmostakim2965@gmail.com</strong> or use our{' '}
         <a href="/contact">contact page</a>.
       </p>
     </LegalPage>

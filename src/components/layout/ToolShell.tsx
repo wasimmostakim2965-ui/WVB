@@ -37,7 +37,6 @@ export function ToolShell({ tool, children }: ToolShellProps) {
         softwareAppLd(tool.name, tool.short, path),
         breadcrumbLd([
           { name: 'Home', path: '/' },
-          { name: 'Tools', path: '/tools' },
           { name: tool.name, path },
         ]),
         ...(content ? [faqLd(content.faq)] : []),
@@ -54,11 +53,7 @@ export function ToolShell({ tool, children }: ToolShellProps) {
       <div className="shell pt-6">
         <nav aria-label="Breadcrumb" className="flex items-center gap-1 text-[13px] text-ink-mute">
           <Link to="/" className="hover:text-brand-700">
-            Home
-          </Link>
-          <ChevronRight className="h-3.5 w-3.5" />
-          <Link to="/tools" className="hover:text-brand-700">
-            Tools
+            All tools
           </Link>
           <ChevronRight className="h-3.5 w-3.5" />
           <span className="font-medium text-ink-soft">{tool.name}</span>

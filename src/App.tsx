@@ -1,11 +1,9 @@
 import { Suspense, lazy, useEffect, type ReactNode } from 'react'
-import { Route, Routes, useLocation } from 'react-router-dom'
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
-import { CookieConsent } from '@/components/layout/CookieConsent'
 import { TOOLS } from '@/data/tools'
-import Home from '@/pages/Home'
-import ToolsIndex from '@/pages/ToolsIndex'
+import ToolsDirectory from '@/pages/ToolsDirectory'
 import About from '@/pages/About'
 import Contact from '@/pages/Contact'
 import PrivacyPolicy from '@/pages/PrivacyPolicy'
@@ -39,7 +37,6 @@ function Shell({ children }: { children: ReactNode }) {
       <Header />
       <main className="flex-1">{children}</main>
       <Footer />
-      <CookieConsent />
     </div>
   )
 }
@@ -49,8 +46,8 @@ export default function App() {
     <Shell>
       <Suspense fallback={<RouteFallback />}>
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/tools" element={<ToolsIndex />} />
+          <Route path="/" element={<ToolsDirectory />} />
+          <Route path="/tools" element={<Navigate to="/" replace />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/privacy-policy" element={<PrivacyPolicy />} />

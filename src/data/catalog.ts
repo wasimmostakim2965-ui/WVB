@@ -261,16 +261,3 @@ export const TOOLS: ToolRecord[] = [
     keywords: ['online stopwatch', 'countdown timer', 'lap timer', 'world clock', 'timer online'],
   },
 ]
-
-export const TOOL_BY_SLUG: Record<string, ToolRecord> = Object.fromEntries(
-  TOOLS.map((t) => [t.slug, t]),
-)
-
-export const POPULAR_TOOLS: ToolRecord[] = TOOLS.filter((t) => t.popular)
-
-export function toolsByCategory(): { category: Category; tools: ToolRecord[] }[] {
-  return CATEGORIES.map((category) => ({
-    category,
-    tools: TOOLS.filter((t) => t.category === category),
-  })).filter((group) => group.tools.length > 0)
-}

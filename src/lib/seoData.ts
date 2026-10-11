@@ -6,12 +6,11 @@ import { TOOLS } from '../data/catalog'
 
 export const SITE = {
   name: 'WVB Tools',
-  domain: 'https://wvbtools.com',
+  domain: 'https://www.xonomo.site',
   tagline: '19 free online tools that run in your browser',
-  twitter: '@wvbtools',
-  email: 'hello@wvbtools.com',
-  updated: 'October 5, 2026',
-  lastmod: '2026-10-05',
+  email: 'wasimmostakim2965@gmail.com',
+  updated: 'October 11, 2026',
+  lastmod: '2026-10-11',
 }
 
 export interface SeoOptions {
@@ -106,20 +105,11 @@ export interface StaticRoute {
 export const STATIC_ROUTES: StaticRoute[] = [
   {
     path: '/',
-    title: DEFAULT_TITLE,
+    title: `All Tools — 19 Free Online Utilities | ${SITE.name}`,
     description:
-      'Free, fast, private online tools that run in your browser. Convert images, merge and split PDFs, remove backgrounds, generate QR codes, test your speed and more. No sign-up.',
-    keywords: ['free online tools', 'image converter', 'pdf tools', 'background remover', 'qr code generator', 'speed test'],
+      'Browse all 19 free online tools: image converter, PDF merge and split, background remover, QR code generator, speed test, word counter, calculators and more. No sign-up, all private.',
+    keywords: ['free online tools', 'online tools list', 'image converter', 'pdf tools', 'background remover', 'qr code generator', 'speed test'],
     priority: '1.0',
-    changefreq: 'weekly',
-  },
-  {
-    path: '/tools',
-    title: `All Tools — Free Online Utilities | ${SITE.name}`,
-    description:
-      'Browse all 19 free online tools: image converter, PDF editor, background remover, QR code generator, speed test, word counter, calculators and more. No sign-up, all private.',
-    keywords: ['online tools list', 'free web tools', 'browser utilities'],
-    priority: '0.9',
     changefreq: 'weekly',
   },
   {
@@ -190,21 +180,25 @@ export function buildRouteManifest(): RouteMeta[] {
       r.path === '/'
         ? {
             '@context': 'https://schema.org',
-            '@type': 'WebSite',
-            name: SITE.name,
-            url: SITE.domain,
-            potentialAction: {
-              '@type': 'SearchAction',
-              target: `${SITE.domain}/tools?q={search_term_string}`,
-              'query-input': 'required name=search_term_string',
-            },
+            '@graph': [
+              {
+                '@type': 'CollectionPage',
+                name: 'All Tools',
+                url: SITE.domain,
+                description: r.description,
+              },
+              {
+                '@type': 'ItemList',
+                itemListElement: TOOLS.map((tool, i) => ({
+                  '@type': 'ListItem',
+                  position: i + 1,
+                  name: tool.name,
+                  url: `${SITE.domain}${toolPath(tool.slug)}`,
+                })),
+              },
+            ],
           }
-        : r.path === '/tools'
-          ? breadcrumbLd([
-              { name: 'Home', path: '/' },
-              { name: 'Tools', path: '/tools' },
-            ])
-          : null,
+        : null,
   }))
 
   for (const tool of TOOLS) {
@@ -222,7 +216,6 @@ export function buildRouteManifest(): RouteMeta[] {
           softwareAppLd(tool.name, tool.short, path),
           breadcrumbLd([
             { name: 'Home', path: '/' },
-            { name: 'Tools', path: '/tools' },
             { name: tool.name, path },
           ]),
         ],

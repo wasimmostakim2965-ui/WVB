@@ -53,10 +53,6 @@ export function useSeo({ title, description, path, keywords, type = 'website', j
     upsertMeta('property', 'og:description', description)
     upsertMeta('property', 'og:url', url)
 
-    upsertMeta('name', 'twitter:card', 'summary_large_image')
-    upsertMeta('name', 'twitter:title', title)
-    upsertMeta('name', 'twitter:description', description)
-
     upsertLink('canonical', url)
 
     // Replace any structured data already in the document (including the block

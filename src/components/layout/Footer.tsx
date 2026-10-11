@@ -1,7 +1,6 @@
 import { Link } from 'react-router-dom'
 import { Sparkles } from 'lucide-react'
 import { CATEGORIES, POPULAR_TOOLS } from '@/data/tools'
-import { clearConsent } from '@/lib/consent'
 
 const LEGAL = [
   { to: '/privacy-policy', label: 'Privacy Policy' },
@@ -18,7 +17,7 @@ export function Footer() {
         <div>
           <Link to="/" className="flex items-center gap-2.5">
             <span className="grid h-9 w-9 place-items-center rounded-xl bg-ink text-white">
-              <Sparkles className="h-4.5 w-4.5" strokeWidth={2.2} />
+              <Sparkles className="h-4 w-4" strokeWidth={2.2} />
             </span>
             <span className="font-display text-lg font-extrabold tracking-tight">
               WVB<span className="text-brand-600">Tools</span>
@@ -49,7 +48,7 @@ export function Footer() {
             {CATEGORIES.map((c) => (
               <li key={c}>
                 <Link
-                  to={`/tools#${c.toLowerCase().replace(/[^a-z]+/g, '-')}`}
+                  to={`/?cat=${c.toLowerCase().replace(/[^a-z]+/g, '-')}`}
                   className="text-ink-mute transition hover:text-brand-700"
                 >
                   {c}
@@ -73,7 +72,7 @@ export function Footer() {
               </Link>
             </li>
             <li>
-              <Link to="/tools" className="text-ink-mute transition hover:text-brand-700">
+              <Link to="/" className="text-ink-mute transition hover:text-brand-700">
                 All tools
               </Link>
             </li>
@@ -96,9 +95,9 @@ export function Footer() {
             <Link to="/privacy-policy" className="hover:text-brand-700">
               Your privacy
             </Link>
-            <button type="button" onClick={clearConsent} className="hover:text-brand-700">
-              Cookie settings
-            </button>
+            <Link to="/cookie-policy" className="hover:text-brand-700">
+              Cookie Policy
+            </Link>
           </p>
         </div>
       </div>

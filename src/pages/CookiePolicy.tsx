@@ -6,11 +6,11 @@ export default function CookiePolicy() {
       title="Cookie Policy"
       description="What cookies and local storage WVB Tools uses, why we use them, and how to control them."
       path="/cookie-policy"
-      updated="October 5, 2026"
+      updated="October 11, 2026"
     >
       <p>
         This Cookie Policy explains how <strong>WVB Tools</strong> uses cookies and similar
-        technologies such as local storage on <strong>wvbtools.com</strong>. It should be read
+        technologies such as local storage on <strong>xonomo.site</strong>. It should be read
         together with our <a href="/privacy-policy">Privacy Policy</a>.
       </p>
 
@@ -24,21 +24,21 @@ export default function CookiePolicy() {
       <h2>2. Cookies we use</h2>
       <h3>Essential</h3>
       <p>
-        We store your cookie consent choice in your browser's local storage (key{' '}
-        <code>wvb-consent-v1</code>) so we do not ask you on every visit. This is necessary for the
-        Site to respect your choice and cannot be turned off while you use the Site.
+        WVB Tools does not set its own cookies and does not store personal data in your browser's
+        local storage. The tools run in your browser, and the files and text you use with them stay
+        on your device.
       </p>
       <h3>Advertising</h3>
       <p>
-        With your consent, third-party advertising partners including Google use cookies to display
-        relevant ads and measure their performance. Google's advertising cookies may be used to
-        serve ads based on your visits to this and other sites. These cookies are set only after you
-        choose "Accept all".
+        When advertising is enabled, third-party advertising partners including Google may use
+        cookies to display relevant ads and measure their performance. Google's advertising cookies
+        may be used to serve ads based on your visits to this and other sites. These cookies are set
+        by those third parties, not by us.
       </p>
       <h3>Analytics</h3>
       <p>
-        If analytics are enabled, they help us count visits and understand which tools are used.
-        Analytics data is aggregated and does not identify you.
+        We do not run analytics cookies. If we add privacy-respecting analytics in future, the data
+        would be aggregated and would not identify you, and this policy would be updated first.
       </p>
 
       <h2>3. Managing cookies</h2>
@@ -46,9 +46,6 @@ export default function CookiePolicy() {
         You can control cookies in several ways:
       </p>
       <ul>
-        <li>
-          Use the cookie banner on your first visit to accept or decline advertising cookies.
-        </li>
         <li>Clear cookies and site data for this Site in your browser settings at any time.</li>
         <li>
           Opt out of personalised advertising through{' '}
@@ -64,8 +61,7 @@ export default function CookiePolicy() {
         <li>Set your browser to block third-party cookies.</li>
       </ul>
       <p>
-        Blocking essential storage may affect how the Site behaves, but the tools themselves will
-        still work.
+        Blocking third-party cookies does not affect the tools themselves, which run without them.
       </p>
 
       <h2>4. Changes</h2>
@@ -76,7 +72,7 @@ export default function CookiePolicy() {
 
       <h2>5. Contact</h2>
       <p>
-        Questions about cookies? Email <strong>privacy@wvbtools.com</strong>.
+        Questions about cookies? Email <strong>wasimmostakim2965@gmail.com</strong>.
       </p>
     </LegalPage>
   )

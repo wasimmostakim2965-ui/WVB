@@ -6,11 +6,11 @@ export default function PrivacyPolicy() {
       title="Privacy Policy"
       description="How WVB Tools handles your data. Our tools run in your browser and do not upload your files. Learn about cookies, analytics and advertising."
       path="/privacy-policy"
-      updated="October 5, 2026"
+      updated="October 11, 2026"
     >
       <p>
         This Privacy Policy explains how <strong>WVB Tools</strong> ("we", "us", "our") handles
-        information when you visit <strong>wvbtools.com</strong> (the "Site") and use our online
+        information when you visit <strong>xonomo.site</strong> (the "Site") and use our online
         tools. We designed the Site so that you can use almost every tool without giving us any
         personal information at all.
       </p>
@@ -75,22 +75,14 @@ export default function PrivacyPolicy() {
 
       <h2>5. Cookies and similar technologies</h2>
       <p>
-        We use cookies and local storage for the following purposes:
+        WVB Tools does not set its own cookies and does not store personal data in your browser's
+        local storage; the tools run in your browser and your files stay on your device.
       </p>
-      <ul>
-        <li>
-          <strong>Essential:</strong> remembering your cookie choice and basic preferences. The
-          Site cannot work correctly without these.
-        </li>
-        <li>
-          <strong>Advertising:</strong> used by our advertising partners, including Google, to
-          display and measure ads. These are set only where you consent.
-        </li>
-      </ul>
       <p>
-        You can change or withdraw your consent at any time by clearing this Site's cookies and
-        local storage in your browser, then reloading the page. See our{' '}
-        <a href="/cookie-policy">Cookie Policy</a> for full details.
+        Third-party advertising partners, including Google, may set cookies when advertising is
+        enabled, in order to display and measure ads. Those cookies are controlled by the third
+        parties, not by us. You can control or block them at any time in your browser settings. See
+        our <a href="/cookie-policy">Cookie Policy</a> for full details.
       </p>
 
       <h2>6. Advertising and Google AdSense</h2>
@@ -120,15 +112,16 @@ export default function PrivacyPolicy() {
         </li>
       </ul>
       <p>
-        For visitors in the European Economic Area, the United Kingdom and Switzerland, we ask for
-        consent before advertising cookies are set, and we work with Google's certified consent
-        management requirements. Where required, ads are served on a non-personalised basis.
+        Where advertising is enabled for visitors in the European Economic Area, the United Kingdom
+        and Switzerland, we use a Google-certified consent management platform to collect consent
+        before advertising cookies are set, in line with Google's EU user consent policy. Where
+        required, ads are served on a non-personalised basis.
       </p>
 
       <h2>7. Analytics</h2>
       <p>
-        We may use privacy-respecting analytics to count visits and understand which tools are
-        useful. Where analytics are used, the data is aggregated and does not identify you.
+        We do not currently run analytics. If we add privacy-respecting analytics in future, the
+        data will be aggregated and will not identify you, and this policy will be updated first.
       </p>
 
       <h2>8. Legal basis and your rights</h2>
@@ -137,7 +130,7 @@ export default function PrivacyPolicy() {
         (for advertising cookies), our legitimate interest in operating and securing the Site, and
         compliance with legal obligations. You may have the right to access, correct, delete or
         restrict processing of your personal data, and to object to processing. To exercise any of
-        these rights, contact us at <strong>privacy@wvbtools.com</strong>.
+        these rights, contact us at <strong>wasimmostakim2965@gmail.com</strong>.
       </p>
 
       <h2>9. Children's privacy</h2>
@@ -168,7 +161,7 @@ export default function PrivacyPolicy() {
 
       <h2>13. Contact</h2>
       <p>
-        Questions about this policy? Email <strong>privacy@wvbtools.com</strong> or use our{' '}
+        Questions about this policy? Email <strong>wasimmostakim2965@gmail.com</strong> or use our{' '}
         <a href="/contact">contact page</a>.
       </p>
     </LegalPage>

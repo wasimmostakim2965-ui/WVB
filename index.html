@@ -20,33 +20,14 @@
       content="Free, fast, private online tools that run in your browser. Convert images, edit PDFs, check your IP, test speed, generate QR codes and 14 more tools. No sign-up."
     />
     <meta name="robots" content="index, follow, max-image-preview:large" />
-    <link rel="canonical" href="https://wvbtools.com/" />
+    <link rel="canonical" href="https://www.xonomo.site/" />
     <!--seo-->
-
-    <!-- Google AdSense.
-         Replace ca-pub-XXXXXXXXXXXXXXXX with your real publisher id in the three
-         places below and in public/ads.txt. The meta tag lets Google verify that
-         you own the site; the script is what serves the ads. Consent Mode starts
-         every signal as "denied" so no advertising cookie is set until the visitor
-         accepts, at which point the app updates the signals to "granted". -->
-    <meta name="google-adsense-account" content="ca-pub-XXXXXXXXXXXXXXXX" />
-    <script>
-      window.__ADSENSE_CLIENT__ = 'ca-pub-XXXXXXXXXXXXXXXX'
-      window.dataLayer = window.dataLayer || []
-      function gtag() {
-        dataLayer.push(arguments)
-      }
-      gtag('consent', 'default', {
-        ad_storage: 'denied',
-        ad_user_data: 'denied',
-        ad_personalization: 'denied',
-        analytics_storage: 'denied',
-        wait_for_update: 500,
-      })
-    </script>
+    <!-- Google AdSense: site-connection (verification) code. Google looks for this
+         script in the <head> of every page; the prerender step copies it into all
+         generated pages. The publisher id can be overridden with VITE_ADSENSE_CLIENT. -->
     <script
       async
-      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX"
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1266781820950132"
       crossorigin="anonymous"
     ></script>
   </head>

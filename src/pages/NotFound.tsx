@@ -17,15 +17,15 @@ export default function NotFound() {
         <p className="mt-6 font-display text-6xl font-extrabold tracking-tight text-ink">404</p>
         <h1 className="mt-2 font-display text-2xl font-bold text-ink">This page does not exist</h1>
         <p className="mx-auto mt-3 max-w-md text-sm leading-6 text-ink-mute">
-          The link may be broken or the page may have moved. Head back to the homepage or browse the
-          full list of tools.
+          The link may be broken or the page may have moved. Head back and pick a tool from the full
+          list.
         </p>
         <div className="mt-7 flex flex-wrap justify-center gap-3">
           <Link to="/" className="btn-primary">
-            Go home
-          </Link>
-          <Link to="/tools" className="btn-ghost">
             Browse all tools
+          </Link>
+          <Link to="/contact" className="btn-ghost">
+            Report a broken link
           </Link>
         </div>
       </div>

@@ -56,9 +56,6 @@ function buildHead(meta) {
     `<meta property="og:title" content="${esc(meta.title)}" />`,
     `<meta property="og:description" content="${esc(meta.description)}" />`,
     `<meta property="og:url" content="${esc(meta.domain)}${esc(url)}" />`,
-    `<meta name="twitter:card" content="summary_large_image" />`,
-    `<meta name="twitter:title" content="${esc(meta.title)}" />`,
-    `<meta name="twitter:description" content="${esc(meta.description)}" />`,
   ]
   if (meta.jsonLd) {
     tags.push(
@@ -77,6 +74,22 @@ function stripSeoTags(html) {
     .replace(/<link\s+rel="canonical"[^>]*>/g, '')
 }
 
+/**
+ * The AdSense verification <script> lives in index.html, so it is copied into
+ * every generated page by the template. Here we only add the publisher meta tag
+ * and the client id the runtime ad slots read. The publisher id defaults to the
+ * account's real id and can be overridden with VITE_ADSENSE_CLIENT at build time.
+ */
+const ADSENSE_CLIENT = process.env.VITE_ADSENSE_CLIENT || 'ca-pub-1266781820950132'
+
+function buildAdsenseTags() {
+  if (!/^ca-pub-\d{10,}$/.test(ADSENSE_CLIENT)) return ''
+  return [
+    `<meta name="google-adsense-account" content="${ADSENSE_CLIENT}" />`,
+    `<script>window.__ADSENSE_CLIENT__ = '${ADSENSE_CLIENT}'</script>`,
+  ].join('\n    ')
+}
+
 /** A short, human-readable summary for crawlers and no-JS visitors. */
 function buildNoscript(meta) {
   const lines = [`<h1>${esc(meta.title.split(' — ')[0])}</h1>`, `<p>${esc(meta.description)}</p>`]
@@ -87,7 +100,7 @@ function buildNoscript(meta) {
       lines.push(`<h3>${esc(item.q)}</h3>`, `<p>${esc(item.a)}</p>`)
     }
   }
-  lines.push('<p><a href="/tools">Browse all free tools</a></p>')
+  lines.push('<p><a href="/">Browse all free tools</a></p>')
   return lines.join('\n      ')
 }
 
@@ -95,6 +108,7 @@ async function main() {
   const data = await loadData()
   const manifest = data.buildManifest()
   const template = await readFile(join(dist, 'index.html'), 'utf8')
+  const adsense = buildAdsenseTags()
 
   if (!template.includes('<!--seo-->')) {
     throw new Error('dist/index.html is missing the <!--seo--> marker')
@@ -103,7 +117,7 @@ async function main() {
   for (const meta of manifest) {
     const head = buildHead({ domain: data.SITE.domain, ...meta })
     const base = stripSeoTags(template)
-    let html = base.replace('<!--seo-->', head)
+    let html = base.replace('<!--seo-->', `${head}\n    ${adsense}`)
     html = html.replace('<!--noscript-->', buildNoscript(meta))
 
     const outFile = meta.path === '/' ? join(dist, 'index.html') : join(dist, `${meta.path.slice(1)}.html`)
@@ -127,6 +141,12 @@ async function main() {
     )
     .replace('<!--noscript-->', '<h1>Page not found</h1>\n      <p><a href="/">Go to the homepage</a></p>')
   await writeFile(join(dist, '404.html'), notFound)
+
+  // ads.txt: emit the real seller line so AdSense can verify the site.
+  if (/^ca-pub-\d{10,}$/.test(ADSENSE_CLIENT)) {
+    const pub = ADSENSE_CLIENT.replace(/^ca-/, '')
+    await writeFile(join(dist, 'ads.txt'), `google.com, ${pub}, DIRECT, f08c47fec0942fa0\n`)
+  }
 
   // Sitemap from the same source of truth.
   const urls = manifest

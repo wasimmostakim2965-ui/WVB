@@ -5,7 +5,6 @@ import { CATEGORIES, TOOLS } from '@/data/tools'
 import { cn } from '@/lib/cn'
 
 const NAV = [
-  { to: '/tools', label: 'All Tools' },
   { to: '/about', label: 'About' },
   { to: '/contact', label: 'Contact' },
 ]
@@ -34,7 +33,7 @@ export function Header() {
       <div className="shell flex h-16 items-center justify-between gap-4">
         <Link to="/" className="flex items-center gap-2.5" aria-label="WVB Tools home">
           <span className="grid h-9 w-9 place-items-center rounded-xl bg-ink text-white shadow-card">
-            <Sparkles className="h-4.5 w-4.5" strokeWidth={2.2} />
+            <Sparkles className="h-4 w-4" strokeWidth={2.2} />
           </span>
           <span className="font-display text-lg font-extrabold tracking-tight">
             WVB<span className="text-brand-600">Tools</span>

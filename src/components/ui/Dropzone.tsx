@@ -67,7 +67,7 @@ export function Dropzone({
       )}
     >
       <span className="grid h-11 w-11 place-items-center rounded-xl bg-white text-brand-600 shadow-card">
-        {icon ?? <UploadCloud className="h-5.5 w-5.5" />}
+        {icon ?? <UploadCloud className="h-5 w-5" />}
       </span>
       <span className="text-sm font-semibold text-ink">{title}</span>
       {subtitle && <span className="text-xs text-ink-mute">{subtitle}</span>}

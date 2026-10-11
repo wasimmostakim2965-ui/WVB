@@ -6,10 +6,10 @@ export default function Disclaimer() {
       title="Disclaimer"
       description="Important limitations and disclaimers for the tools and information provided by WVB Tools."
       path="/disclaimer"
-      updated="October 5, 2026"
+      updated="October 11, 2026"
     >
       <p>
-        The information and tools on <strong>wvbtools.com</strong> are provided for general
+        The information and tools on <strong>xonomo.site</strong> are provided for general
         informational and utility purposes only. Please read this disclaimer carefully before
         relying on any result.
       </p>
@@ -63,7 +63,7 @@ export default function Disclaimer() {
 
       <h2>6. Contact</h2>
       <p>
-        If you have questions about this disclaimer, email <strong>legal@wvbtools.com</strong>.
+        If you have questions about this disclaimer, email <strong>wasimmostakim2965@gmail.com</strong>.
       </p>
     </LegalPage>
   )

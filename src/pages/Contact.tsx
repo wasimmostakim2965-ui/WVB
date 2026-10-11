@@ -19,7 +19,7 @@ const FAQS = [
   },
   {
     q: 'Do you offer advertising or sponsorship?',
-    a: 'For business and advertising enquiries, write to hello@wvbtools.com with a short description of your proposal.',
+    a: 'For business and advertising enquiries, write to wasimmostakim2965@gmail.com with a short description of your proposal.',
   },
 ]
 
@@ -41,7 +41,7 @@ export default function Contact() {
     // No backend is bundled: open the user's mail client with a prefilled message.
     const subject = encodeURIComponent(`WVB Tools enquiry from ${name || 'a visitor'}`)
     const body = encodeURIComponent(`${message}\n\n— ${name}${email ? ` (${email})` : ''}`)
-    window.location.href = `mailto:hello@wvbtools.com?subject=${subject}&body=${body}`
+    window.location.href = `mailto:wasimmostakim2965@gmail.com?subject=${subject}&body=${body}`
     setSent(true)
   }
 
@@ -58,9 +58,9 @@ export default function Contact() {
 
         <div className="mt-8 grid gap-4 sm:grid-cols-3">
           {[
-            { icon: Mail, title: 'General', value: 'hello@wvbtools.com' },
-            { icon: ShieldCheck, title: 'Privacy', value: 'privacy@wvbtools.com' },
-            { icon: MessageSquare, title: 'Legal', value: 'legal@wvbtools.com' },
+            { icon: Mail, title: 'General', value: 'wasimmostakim2965@gmail.com' },
+            { icon: ShieldCheck, title: 'Privacy', value: 'wasimmostakim2965@gmail.com' },
+            { icon: MessageSquare, title: 'Legal', value: 'wasimmostakim2965@gmail.com' },
           ].map((c) => (
             <div key={c.title} className="card p-4">
               <c.icon className="h-5 w-5 text-brand-600" />
@@ -76,7 +76,7 @@ export default function Contact() {
           {sent && (
             <Notice tone="success" className="mb-4">
               Your email app should have opened with your message ready to send. If it did not,
-              email us directly at hello@wvbtools.com.
+              email us directly at wasimmostakim2965@gmail.com.
             </Notice>
           )}
           <form className="space-y-4" onSubmit={onSubmit}>

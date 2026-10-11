@@ -2,8 +2,7 @@
 
 A suite of 19 free, privacy-first web tools that run entirely in the browser — image
 conversion and resizing, background removal, PDF merge/split/compress, QR codes, a
-speed test, calculators, text tools and more. No accounts, no uploads, no tracking
-before consent.
+speed test, calculators, text tools and more. No accounts, no uploads, no tracking.
 
 Built with React 18, TypeScript, Vite and Tailwind CSS.
 
@@ -22,17 +21,24 @@ npm run preview    # serve the production build locally
 ```
 src/
   data/tools.ts        Tool registry: slug, name, category, icon, SEO copy
-  pages/               Route-level pages (Home, ToolsIndex, ToolPage, legal pages)
+  pages/               Route-level pages (ToolsDirectory, ToolPage, legal pages)
   components/          Layout (Header, Footer, ToolShell) and UI (ToolCard, AdSlot)
   tools/               One component per tool, lazily loaded by ToolPage
-  lib/                 Shared helpers (seo, consent, qr, cn)
-public/                Static assets, robots.txt, sitemap.xml, ads.txt
+  lib/                 Shared helpers (seo, seoData, ads, qr, cn)
+public/                Static assets, robots.txt, ads.txt
+scripts/prerender.mjs  Build-time prerender of every route + sitemap + 404
 vercel.json            SPA rewrite + security/cache headers
 ```
 
 Adding a tool means: create `src/tools/MyTool.tsx`, register it in `src/data/tools.ts`
-and map it in `src/pages/ToolPage.tsx`. The homepage grid, search and header menu all
+and map it in `src/pages/ToolPage.tsx`. The directory grid, search and header menu all
 read from the registry.
+
+## SEO
+
+Every route — the tool directory, the static pages and each of the 19 tools — is
+prerendered to its own HTML file with a unique title, description, canonical URL and
+JSON-LD, and listed in `sitemap.xml`. `npm run build` regenerates all of it.
 
 ## Deployment (Vercel)
 
@@ -48,18 +54,24 @@ vercel --prod   # production deployment
 Or import the repository at <https://vercel.com/new> — the settings are detected
 automatically.
 
-## Enabling ads (AdSense)
+## Ads (AdSense)
 
-The site ships with **no live ad code**. Ad units render nothing until a real
-publisher ID is set, and the AdSense script is injected only after a visitor accepts
-advertising cookies.
+The AdSense site-verification script for publisher `ca-pub-1266781820950132` sits in
+the `<head>` of `index.html`, so it appears on every prerendered page, and `ads.txt`
+holds the matching seller line. This is the code Google asks you to place in the
+`<head>` of every page to connect the site to AdSense.
 
-1. Replace the placeholder in `index.html`:
-   `window.__ADSENSE_CLIENT__ = 'ca-pub-XXXXXXXXXXXXXXXX'` → your `ca-pub-…` id.
-2. Replace the placeholder publisher line in `public/ads.txt` with your own.
-3. Set the `slot` prop of each `AdSlot` to the ad-unit id from AdSense.
+Ad units stay hidden until you give them ids. Set these in your Vercel project (or
+`.env.local`) to switch a unit on:
 
-Until step 1 is done, `AdSlot` returns `null`, so the layout stays clean.
+```
+VITE_ADSENSE_SLOT_TOOLS=0000000000
+VITE_ADSENSE_SLOT_SIDEBAR=0000000000
+```
+
+To use a different publisher id, set `VITE_ADSENSE_CLIENT=ca-pub-…`; the build then
+overrides the meta tag and `ads.txt`. Without a slot id, that `AdSlot` renders `null`
+and no ad request is made.
 
 ## Privacy notes
 

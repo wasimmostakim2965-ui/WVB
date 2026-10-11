@@ -833,7 +833,7 @@ export const TOOL_CONTENT: Record<string, ToolContent> = {
     ],
   },
 
-  stopwatch: {
+  'stopwatch': {
     intro:
       'A stopwatch, a countdown timer and a set of world clocks in one page. Time laps precisely, set a timer that alerts you when it ends, and see the current time in major cities without reaching for another app.',
     sections: [

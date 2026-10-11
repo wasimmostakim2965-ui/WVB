@@ -33,7 +33,7 @@ function buildPayload(kind: Kind, fields: Record<string, string>): string {
 export default function QrCodeTool({ tool }: { tool: ToolMeta }) {
   const [mode, setMode] = useState<Mode>('create')
   const [kind, setKind] = useState<Kind>('text')
-  const [fields, setFields] = useState<Record<string, string>>({ text: 'https://wvbtools.com' })
+  const [fields, setFields] = useState<Record<string, string>>({ text: 'https://xonomo.site' })
   const [size, setSize] = useState(512)
   const [dark, setDark] = useState('#0B0E14')
   const [light, setLight] = useState('#FFFFFF')
@@ -189,7 +189,7 @@ export default function QrCodeTool({ tool }: { tool: ToolMeta }) {
                   value={kind}
                   onChange={(k) => {
                     setKind(k)
-                    setFields(k === 'text' ? { text: 'https://wvbtools.com' } : {})
+                    setFields(k === 'text' ? { text: 'https://xonomo.site' } : {})
                   }}
                   options={[
                     { value: 'url', label: 'Link' },

@@ -5,6 +5,10 @@
   "outputDirectory": "dist",
   "cleanUrls": true,
   "trailingSlash": false,
+  "redirects": [
+    { "source": "/tools", "destination": "/", "permanent": true },
+    { "source": "/", "has": [{ "type": "host", "value": "xonomo.site" }], "destination": "https://www.xonomo.site/", "permanent": true }
+  ],
   "headers": [
     {
       "source": "/assets/(.*)",
