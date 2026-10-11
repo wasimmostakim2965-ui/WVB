@@ -33,6 +33,21 @@ export interface PageMeta {
 
 export const DEFAULT_TITLE = `${SITE.name} — 19 Free Online Tools for Images, PDF, Text & More`
 
+/**
+ * Google's preferred way to set a site name is `WebSite` structured data on the
+ * homepage, matching `og:site_name` and the visible brand. It is emitted on every
+ * page so the name is unambiguous, including after a domain is repurposed.
+ */
+export function websiteLd(): Record<string, unknown> {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: SITE.name,
+    alternateName: [SITE.name, SITE.domain.replace(/^https?:\/\//, '').replace(/^www\./, '')],
+    url: SITE.domain,
+  }
+}
+
 export function toolPath(slug: string) {
   return `/${slug}`
 }
@@ -105,7 +120,7 @@ export interface StaticRoute {
 export const STATIC_ROUTES: StaticRoute[] = [
   {
     path: '/',
-    title: `All Tools — 19 Free Online Utilities | ${SITE.name}`,
+    title: `${SITE.name} — 19 Free Online Tools for Images, PDF, Text & More`,
     description:
       'Browse all 19 free online tools: image converter, PDF merge and split, background remover, QR code generator, speed test, word counter, calculators and more. No sign-up, all private.',
     keywords: ['free online tools', 'online tools list', 'image converter', 'pdf tools', 'background remover', 'qr code generator', 'speed test'],
@@ -181,6 +196,7 @@ export function buildRouteManifest(): RouteMeta[] {
         ? {
             '@context': 'https://schema.org',
             '@graph': [
+              websiteLd(),
               {
                 '@type': 'CollectionPage',
                 name: 'All Tools',

@@ -2,7 +2,7 @@ import { useMemo } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { ArrowRight, Search, ShieldCheck } from 'lucide-react'
 import { CATEGORIES, TOOLS, POPULAR_TOOLS, type Category } from '@/data/tools'
-import { useSeo, SITE, faqLd } from '@/lib/seo'
+import { useSeo, SITE, faqLd, websiteLd } from '@/lib/seo'
 import { cn } from '@/lib/cn'
 import { AdSlot } from '@/components/ui/AdSlot'
 import { AD_UNITS } from '@/lib/ads'
@@ -73,7 +73,7 @@ export default function ToolsDirectory() {
     )
 
   useSeo({
-    title: `All Tools — 19 Free Online Utilities | ${SITE.name}`,
+    title: `${SITE.name} — 19 Free Online Tools for Images, PDF, Text & More`,
     description:
       'Browse all 19 free online tools: image converter, PDF merge and split, background remover, QR code generator, speed test, word counter, calculators and more. No sign-up, all private.',
     path: '/',
@@ -89,6 +89,7 @@ export default function ToolsDirectory() {
     jsonLd: {
       '@context': 'https://schema.org',
       '@graph': [
+        websiteLd(),
         { '@type': 'CollectionPage', name: 'All Tools', url: SITE.domain },
         {
           '@type': 'ItemList',

@@ -6,6 +6,7 @@ export {
   breadcrumbLd,
   softwareAppLd,
   faqLd,
+  websiteLd,
   toolPath,
   toolTitle,
   toolMetaDescription,
