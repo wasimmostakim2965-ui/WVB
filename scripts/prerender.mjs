@@ -45,17 +45,23 @@ const esc = (s) =>
 
 function buildHead(meta) {
   const url = meta.path === '/' ? '/' : meta.path
+  const fullUrl = `${meta.domain}${url}`
+  const image = `${meta.domain}/og-image.svg`
   const tags = [
     `<title>${esc(meta.title)}</title>`,
     `<meta name="description" content="${esc(meta.description)}" />`,
-    meta.keywords?.length ? `<meta name="keywords" content="${esc(meta.keywords.join(', '))}" />` : '',
     `<meta name="robots" content="index, follow, max-image-preview:large" />`,
-    `<link rel="canonical" href="${esc(meta.domain)}${esc(url)}" />`,
+    `<link rel="canonical" href="${esc(fullUrl)}" />`,
     `<meta property="og:type" content="website" />`,
     `<meta property="og:site_name" content="WVB Tools" />`,
     `<meta property="og:title" content="${esc(meta.title)}" />`,
     `<meta property="og:description" content="${esc(meta.description)}" />`,
-    `<meta property="og:url" content="${esc(meta.domain)}${esc(url)}" />`,
+    `<meta property="og:url" content="${esc(fullUrl)}" />`,
+    `<meta property="og:image" content="${esc(image)}" />`,
+    `<meta name="twitter:card" content="summary_large_image" />`,
+    `<meta name="twitter:title" content="${esc(meta.title)}" />`,
+    `<meta name="twitter:description" content="${esc(meta.description)}" />`,
+    `<meta name="twitter:image" content="${esc(image)}" />`,
   ]
   if (meta.jsonLd) {
     tags.push(
@@ -90,6 +96,19 @@ function buildAdsenseTags() {
   ].join('\n    ')
 }
 
+/** Build a FAQPage graph node from a page's Q&A pairs, or null if there are none. */
+function buildFaqLd(meta) {
+  if (!meta.faq?.length) return null
+  return {
+    '@type': 'FAQPage',
+    mainEntity: meta.faq.map((item) => ({
+      '@type': 'Question',
+      name: item.q,
+      acceptedAnswer: { '@type': 'Answer', text: item.a },
+    })),
+  }
+}
+
 /** A short, human-readable summary for crawlers and no-JS visitors. */
 function buildNoscript(meta) {
   const lines = [`<h1>${esc(meta.title.split(' — ')[0])}</h1>`, `<p>${esc(meta.description)}</p>`]
@@ -97,6 +116,13 @@ function buildNoscript(meta) {
   if (meta.tools?.length) {
     lines.push('<h2>All tools</h2>', '<ul>')
     for (const tool of meta.tools) {
+      lines.push(`<li><a href="/${esc(tool.slug)}">${esc(tool.name)}</a></li>`)
+    }
+    lines.push('</ul>')
+  }
+  if (meta.related?.length) {
+    lines.push('<h2>Related tools</h2>', '<ul>')
+    for (const tool of meta.related) {
       lines.push(`<li><a href="/${esc(tool.slug)}">${esc(tool.name)}</a></li>`)
     }
     lines.push('</ul>')
@@ -126,6 +152,21 @@ async function main() {
     const base = stripSeoTags(template)
     let html = base.replace('<!--seo-->', `${head}\n    ${adsense}`)
     html = html.replace('<!--noscript-->', buildNoscript(meta))
+
+    // Add a FAQPage node (built from the same Q&A shown on the page) to the
+    // static structured data, so the questions can appear in search results.
+    const faqNode = buildFaqLd(meta)
+    if (faqNode && meta.jsonLd) {
+      const merged = { ...meta.jsonLd }
+      if (Array.isArray(merged['@graph'])) merged['@graph'] = [...merged['@graph'], faqNode]
+      else merged['@graph'] = [faqNode]
+      const withFaq = JSON.stringify(merged)
+      const withoutFaq = JSON.stringify(meta.jsonLd)
+      html = html.replace(
+        `<script type="application/ld+json" data-seo="static">${withoutFaq}</script>`,
+        `<script type="application/ld+json" data-seo="static">${withFaq}</script>`,
+      )
+    }
 
     const outFile = meta.path === '/' ? join(dist, 'index.html') : join(dist, `${meta.path.slice(1)}.html`)
     await mkdir(dirname(outFile), { recursive: true })

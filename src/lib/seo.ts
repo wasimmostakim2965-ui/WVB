@@ -39,13 +39,13 @@ function upsertLink(rel: string, href: string) {
  * canonical, social tags and structured data. The same values are written into
  * the static HTML at build time, so crawlers see them without running scripts.
  */
-export function useSeo({ title, description, path, keywords, type = 'website', jsonLd }: SeoOptions) {
+export function useSeo({ title, description, path, type = 'website', jsonLd }: SeoOptions) {
   useEffect(() => {
     const url = `${SITE.domain}${path}`
     document.title = title
 
     upsertMeta('name', 'description', description)
-    if (keywords?.length) upsertMeta('name', 'keywords', keywords.join(', '))
+
     upsertMeta('name', 'robots', 'index, follow, max-image-preview:large')
 
     upsertMeta('property', 'og:type', type)
@@ -53,6 +53,11 @@ export function useSeo({ title, description, path, keywords, type = 'website', j
     upsertMeta('property', 'og:title', title)
     upsertMeta('property', 'og:description', description)
     upsertMeta('property', 'og:url', url)
+    upsertMeta('property', 'og:image', `${SITE.domain}/og-image.svg`)
+    upsertMeta('name', 'twitter:card', 'summary_large_image')
+    upsertMeta('name', 'twitter:title', title)
+    upsertMeta('name', 'twitter:description', description)
+    upsertMeta('name', 'twitter:image', `${SITE.domain}/og-image.svg`)
 
     upsertLink('canonical', url)
 
@@ -71,5 +76,5 @@ export function useSeo({ title, description, path, keywords, type = 'website', j
     return () => {
       if (script) script.remove()
     }
-  }, [title, description, path, keywords, type, jsonLd])
+  }, [title, description, path, type, jsonLd])
 }
